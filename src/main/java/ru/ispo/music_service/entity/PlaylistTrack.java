@@ -6,8 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 
-@Setter
 @Getter
+@Setter
 @Entity
 @Table(name = "playlist_tracks")
 public class PlaylistTrack {
@@ -25,5 +25,6 @@ public class PlaylistTrack {
     private Track track;
 
     private int position;
+
 
 }

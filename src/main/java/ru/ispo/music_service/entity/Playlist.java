@@ -22,5 +22,4 @@ public class Playlist {
     @OneToMany(mappedBy = "playlist")
     private List<PlaylistTrack> tracks = new ArrayList<>();
 
-    // Getters, Setters
 }

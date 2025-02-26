@@ -8,9 +8,9 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
+@Entity
 @Setter
 @Getter
-@Entity
 public class License {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,5 +39,4 @@ public class License {
         return (track != null) ^ (playlist != null);
     }
 
-    // Getters, Setters
 }
