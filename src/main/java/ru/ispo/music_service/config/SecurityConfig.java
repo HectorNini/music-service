@@ -1,4 +1,4 @@
-package ru.ispo.music_sevice.config;
+package ru.ispo.music_service.config;
 
 
 import org.springframework.context.annotation.Bean;

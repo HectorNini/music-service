@@ -1,9 +1,9 @@
-package ru.ispo.music_sevice.service;
+package ru.ispo.music_service.service;
 
 
 import org.springframework.stereotype.Service;
-import ru.ispo.music_sevice.entity.License;
-import ru.ispo.music_sevice.repository.LicenseRepository;
+import ru.ispo.music_service.entity.License;
+import ru.ispo.music_service.repository.LicenseRepository;
 
 import java.time.LocalDate;
 import java.util.List;

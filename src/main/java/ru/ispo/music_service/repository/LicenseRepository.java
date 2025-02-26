@@ -1,8 +1,8 @@
-package ru.ispo.music_sevice.repository;
+package ru.ispo.music_service.repository;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import ru.ispo.music_sevice.entity.License;
+import ru.ispo.music_service.entity.License;
 
 import java.time.LocalDate;
 import java.util.List;

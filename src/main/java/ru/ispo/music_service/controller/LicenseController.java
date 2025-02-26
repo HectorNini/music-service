@@ -1,10 +1,10 @@
-package ru.ispo.music_sevice.controller;
+package ru.ispo.music_service.controller;
 
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.ispo.music_sevice.entity.License;
-import ru.ispo.music_sevice.service.LicenseService;
+import ru.ispo.music_service.entity.License;
+import ru.ispo.music_service.service.LicenseService;
 
 import java.util.List;
 

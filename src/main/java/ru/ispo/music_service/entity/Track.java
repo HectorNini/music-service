@@ -1,4 +1,4 @@
-package ru.ispo.music_sevice.entity;
+package ru.ispo.music_service.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

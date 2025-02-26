@@ -1,4 +1,4 @@
-package ru.ispo.music_sevice;
+package ru.ispo.music_service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

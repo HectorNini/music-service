@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>ru.ispo</groupId>
-	<artifactId>music-sevice</artifactId>
+	<artifactId>music-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>music-sevice</name>
 	<description>Demo project for Spring Boot</description>
