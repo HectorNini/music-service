@@ -1,37 +1,26 @@
 package ru.ispo.music_sevice.entity;
 
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Set;
 
-@Entity
-@Table(name = "t_role")
-@Setter
 @Getter
-public class Role implements GrantedAuthority {
+@Setter
+@Entity
+@Table(name = "roles")
+public class Role {
     @Id
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long roleId;
+
+    @Column(unique = true, nullable = false)
     private String name;
-    @Transient
+
     @ManyToMany(mappedBy = "roles")
     private Set<User> users;
-    public Role() {
-    }
 
-    public Role(Long id) {
-        this.id = id;
-    }
-
-    public Role(Long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    @Override
-    public String getAuthority() {
-        return getName();
-    }
+    // Getters, Setters
 }
