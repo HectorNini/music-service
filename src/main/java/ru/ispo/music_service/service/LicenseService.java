@@ -16,7 +16,7 @@ public class LicenseService {
         this.licenseRepository = licenseRepository;
     }
 
-    public List<License> getActiveLicenses(Long userId) {
+    public List<License> getActiveLicenses(Integer userId) {
         return licenseRepository.findByUser_UserIdAndEndDateAfter(userId, LocalDate.now());
     }
 
