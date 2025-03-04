@@ -17,7 +17,7 @@ public class LicenseService {
     }
 
     public List<License> getActiveLicenses(Long userId) {
-        return licenseRepository.findByUserIdAndEndDateAfter(userId, LocalDate.now());
+        return licenseRepository.findByUser_UserIdAndEndDateAfter(userId, LocalDate.now());
     }
 
     public License createLicense(License license) {

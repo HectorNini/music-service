@@ -8,5 +8,5 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface LicenseRepository extends JpaRepository<License, Long> {
-    List<License> findByUserIdAndEndDateAfter(Long userId, LocalDate date);
+    List<License> findByUser_UserIdAndEndDateAfter(Long userId, LocalDate date);
 }

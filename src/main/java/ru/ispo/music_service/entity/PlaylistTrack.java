@@ -26,5 +26,5 @@ public class PlaylistTrack {
 
     private int position;
 
-
+    // Getters, Setters
 }

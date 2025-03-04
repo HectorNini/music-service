@@ -8,16 +8,18 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
-@Entity
+
 @Setter
 @Getter
+@Entity
+@Table(name = "licenses")
 public class License {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long licenseId;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne
@@ -28,13 +30,19 @@ public class License {
     @JoinColumn(name = "playlist_id")
     private Playlist playlist;
 
+    @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
-    private LocalDate endDate;
-    private double pricePaid;
-    private boolean isOwnerLicense;
 
-    // Проверка: трек ИЛИ плейлист
-    @AssertTrue(message = "License must have either track or playlist")
+    @Column(name = "end_date", nullable = false)
+    private LocalDate endDate;
+
+    @Column(name = "price_paid", nullable = false)
+    private double pricePaid;
+
+    @Column(name = "purchased_at", nullable = false)
+    private LocalDate purchasedAt = LocalDate.now();
+
+    @AssertTrue(message = "License must have either a track or a playlist")
     private boolean isValid() {
         return (track != null) ^ (playlist != null);
     }
