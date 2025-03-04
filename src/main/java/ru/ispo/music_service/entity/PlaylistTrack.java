@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "playlist_tracks")
+@Table(name = "\"PlaylistTracks\"")
 public class PlaylistTrack {
     @EmbeddedId
     private PlaylistTrackId id;

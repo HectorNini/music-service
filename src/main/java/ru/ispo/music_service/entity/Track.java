@@ -4,14 +4,17 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigInteger;
+
 @Getter
 @Setter
 @Entity
-@Table(name = "tracks")
+@Table(name = "\"Tracks\"")
 public class Track {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long trackId;
+    @Column(name = "track_id")
+    private Integer  trackId;
 
     @Column(nullable = false)
     private String title;
@@ -25,7 +28,7 @@ public class Track {
     private String filePath;
 
     @Column(name = "base_price", nullable = false)
-    private double basePrice;
+    private BigInteger basePrice;
 
     // Getters, Setters
 }

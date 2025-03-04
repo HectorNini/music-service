@@ -5,18 +5,16 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Set;
-
 @Getter
 @Setter
 @Entity
-@Table(name = "roles")
+@Table(name = "\"Roles\"")
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long roleId;
+    @Column(name = "role_id")
+    private Integer  roleId;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
-
 }

@@ -6,6 +6,6 @@ import java.io.Serializable;
 
 @Embeddable
 class PlaylistTrackId implements Serializable {
-    private Long playlistId;
-    private Long trackId;
+    private Integer  playlistId;
+    private Integer  trackId;
 }
