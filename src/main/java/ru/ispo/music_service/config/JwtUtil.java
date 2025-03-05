@@ -9,7 +9,7 @@ import java.util.Date;
 
 @Component
 public class JwtUtil {
-    private final String SECRET_KEY = "your-256-bit-secret-key"; // Замените на реальный ключ
+    private final String SECRET_KEY = "aX6+qZ7mRlWI5qk0G8ZJ3NxYRfYw1bT2zKjLpSvHtD0="; // Замените на реальный ключ
     private final long EXPIRATION_TIME = 864_000_000; // 10 дней
 
     public String generateToken(UserDetails userDetails) {

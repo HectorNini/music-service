@@ -6,9 +6,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import ru.ispo.music_service.config.JwtUtil;
 import ru.ispo.music_service.entity.Role;
 import ru.ispo.music_service.entity.User;
 import ru.ispo.music_service.repository.RoleRepository;
@@ -22,14 +24,16 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
 
-    public AuthController(AuthenticationManager authenticationManager,
+    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil,
                           UserRepository userRepository,
                           PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
         this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.roleRepository = roleRepository;
@@ -65,16 +69,14 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.username(),
-                            request.password()
-                    )
+                    new UsernamePasswordAuthenticationToken(request.username(), request.password())
             );
 
-            return ResponseEntity.ok().body(authentication.getPrincipal());
+            String token = jwtUtil.generateToken((UserDetails) authentication.getPrincipal());
+            return ResponseEntity.ok(Map.of("token", token));
+
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
