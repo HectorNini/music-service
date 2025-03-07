@@ -85,8 +85,8 @@ public class AuthController {
     public record RegistrationRequest(
             String username,
             String password,
-            String email,  // Добавлено
-            String fullName // Добавлено
+            String email,
+            String fullName
     ) {}
     public record LoginRequest(String username, String password) {}
 }
