@@ -1,5 +1,6 @@
 package ru.ispo.music_service.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,8 +17,10 @@ import ru.ispo.music_service.entity.User;
 import ru.ispo.music_service.repository.RoleRepository;
 import ru.ispo.music_service.repository.UserRepository;
 
+import javax.management.relation.RoleNotFoundException;
 import java.time.ZonedDateTime;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -40,21 +43,24 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegistrationRequest request) {
+    public ResponseEntity<?> register(@RequestBody @Valid RegistrationRequest request) throws RoleNotFoundException {
         if (userRepository.existsByUsername(request.username())) {
             return ResponseEntity.badRequest().body("Username is already taken");
         }
+        if (userRepository.existsByEmail(request.email())) {
+            return ResponseEntity.badRequest().body("Email is already registered");
+        }
 
         Role userRole = roleRepository.findByName("user")
-                .orElseThrow(() -> new RuntimeException("Role 'user' not found"));
+                .orElseThrow(() -> new RoleNotFoundException("Role 'USER' not found"));
 
         User user = new User();
         user.setUsername(request.username());
         user.setPasswordHash(passwordEncoder.encode(request.password()));
-        user.setEmail(request.email()); // Добавлено
-        user.setFullName(request.fullName()); // Добавлено
-        user.setCreatedAt(ZonedDateTime.now()); // Текущее время
-        user.setLastLogin(ZonedDateTime.now()); // Текущее время
+        user.setEmail(request.email());
+        user.setFullName(request.fullName());
+        user.setCreatedAt(ZonedDateTime.now());
+        user.setLastLogin(ZonedDateTime.now());
         user.setRole(userRole);
 
         userRepository.save(user);

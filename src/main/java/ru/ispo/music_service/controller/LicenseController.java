@@ -1,11 +1,14 @@
 package ru.ispo.music_service.controller;
 
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+import ru.ispo.music_service.dto.LicenseCreateDto;
+import ru.ispo.music_service.dto.LicenseDto;
 import ru.ispo.music_service.entity.License;
 import ru.ispo.music_service.entity.User;
 import ru.ispo.music_service.repository.UserRepository;
@@ -25,7 +28,7 @@ public class LicenseController {
     }
 
     @GetMapping("/active")
-    public ResponseEntity<List<License>> getActiveLicenses(
+    public ResponseEntity<List<LicenseDto>> getActiveLicenses(
             @AuthenticationPrincipal UserDetails userDetails) { // Используем UserDetails
         User user = userRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -33,10 +36,14 @@ public class LicenseController {
     }
 
     @PostMapping
-    public ResponseEntity<License> createLicense(
-            @RequestBody License license,
-            @AuthenticationPrincipal User user) {
-        license.setUser(user);
-        return ResponseEntity.ok(licenseService.createLicense(license));
+    public ResponseEntity<LicenseDto> createLicense(
+            @RequestBody @Valid LicenseCreateDto licenseCreateDto,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        LicenseDto license = licenseService.createLicense(licenseCreateDto, user);
+        return ResponseEntity.ok(license);
     }
 }
