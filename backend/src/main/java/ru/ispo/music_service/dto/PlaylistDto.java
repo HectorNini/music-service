@@ -1,16 +1,19 @@
 package ru.ispo.music_service.dto;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+import java.util.List;
+
+
 @Getter
 @Setter
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "playlistId")
 public class PlaylistDto {
-    private Integer playlistId;
-    private String title;
-    private String description;
-    private UserDto owner;
-
+    private Integer playlistId; // Идентификатор плейлиста
+    private String name;        // Название плейлиста
+    private String description; // Описание плейлиста
+    private List<TrackDto> tracks; // Добавлено поле для треков
+    private Integer priceId; // Новое поле
+    private BigDecimal price; // Новое поле
 }

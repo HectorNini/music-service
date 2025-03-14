@@ -30,4 +30,9 @@ public class UserService implements UserDetailsService {
                 .roles(user.getRole().getName().toUpperCase())
                 .build();
     }
+
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
 }

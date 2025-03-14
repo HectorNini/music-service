@@ -27,8 +27,5 @@ public class Track {
     @Column(name = "file_path", nullable = false)
     private String filePath;
 
-    @Column(name = "base_price", nullable = false)
-    private BigInteger basePrice;
-
     // Getters, Setters
 }

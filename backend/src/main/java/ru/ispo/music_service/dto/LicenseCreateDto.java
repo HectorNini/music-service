@@ -1,19 +1,13 @@
 package ru.ispo.music_service.dto;
 
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-
 
 @Getter
 @Setter
 public class LicenseCreateDto {
-    private Integer trackId;
-    private Integer playlistId;
+    private Integer priceId; // Ссылка на Pricing
     private LocalDate startDate;
     private LocalDate endDate;
-    private BigDecimal pricePaid;
-    // Геттеры и сеттеры
 }

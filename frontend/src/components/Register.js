@@ -1,63 +1,47 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 
-export default function Register() {
-  const [formData, setFormData] = useState({
-    username: '',
-    password: '',
-    email: '',
-    fullName: ''
-  });
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:8080/api/auth/register', formData);
-      console.log('Registration success:', response.data);
-      navigate('/login');
-    } catch (err) {
-      setError(err.response?.data || 'Registration failed');
-    }
-  };
-
+const Register = ({ formData, error, onSubmit, onInputChange }) => {
   return (
     <div className="auth-container">
       <h2>Register</h2>
       {error && <div className="error">{error}</div>}
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={onSubmit}>
         <input
           type="text"
           placeholder="Username"
+          name="username"
           value={formData.username}
-          onChange={(e) => setFormData({...formData, username: e.target.value})}
+          onChange={(e) => onInputChange(e.target.name, e.target.value)}
           required
         />
         <input
           type="password"
           placeholder="Password"
+          name="password"
           value={formData.password}
-          onChange={(e) => setFormData({...formData, password: e.target.value})}
+          onChange={(e) => onInputChange(e.target.name, e.target.value)}
           required
         />
         <input
           type="email"
           placeholder="Email"
+          name="email"
           value={formData.email}
-          onChange={(e) => setFormData({...formData, email: e.target.value})}
+          onChange={(e) => onInputChange(e.target.name, e.target.value)}
           required
         />
         <input
           type="text"
           placeholder="Full Name"
+          name="fullName"
           value={formData.fullName}
-          onChange={(e) => setFormData({...formData, fullName: e.target.value})}
+          onChange={(e) => onInputChange(e.target.name, e.target.value)}
           required
         />
         <button type="submit">Register</button>
       </form>
     </div>
   );
-}
+};
+
+export default Register;

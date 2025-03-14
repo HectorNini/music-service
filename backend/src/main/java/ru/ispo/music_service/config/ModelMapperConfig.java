@@ -23,11 +23,9 @@ public class ModelMapperConfig {
 
         // Настраиваем маппинг вручную
         typeMap.addMappings(m -> {
-            m.map(User::getUserId, UserDto::setUserId);
             m.map(User::getUsername, UserDto::setUsername);
             m.map(User::getEmail, UserDto::setEmail);
             m.map(User::getFullName, UserDto::setFullName);
-            m.<String>map(src -> src.getRole().getName(), UserDto::setRoleName);
         });
 
     }

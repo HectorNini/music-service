@@ -2,6 +2,7 @@ package ru.ispo.music_service.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -44,10 +45,26 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/licenses/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/tracks").permitAll() // Открыть доступ к трекам
+                        .requestMatchers(HttpMethod.GET, "/api/playlists").permitAll() // Открыть доступ к плейлистам
+                        // Только админы
+                        .requestMatchers(HttpMethod.POST, "/api/licenses").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/licenses/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/payments").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/licenses/**").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+
+                        // Пользователи
+                        .requestMatchers(HttpMethod.GET, "/api/licenses/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/payments/me").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/api/licenses/buy").hasRole("USER")
+
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(

@@ -1,44 +1,38 @@
 package ru.ispo.music_service.service;
 
-
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import ru.ispo.music_service.dto.LicenseCreateDto;
 import ru.ispo.music_service.dto.LicenseDto;
-import ru.ispo.music_service.dto.PlaylistDto;
-import ru.ispo.music_service.dto.TrackDto;
 import ru.ispo.music_service.entity.License;
-import ru.ispo.music_service.entity.Playlist;
-import ru.ispo.music_service.entity.Track;
+import ru.ispo.music_service.entity.Pricing;
 import ru.ispo.music_service.entity.User;
 import ru.ispo.music_service.repository.LicenseRepository;
-import ru.ispo.music_service.repository.PlaylistRepository;
-import ru.ispo.music_service.repository.TrackRepository;
+import ru.ispo.music_service.repository.PricingRepository;
 import ru.ispo.music_service.repository.UserRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class LicenseService {
     private final LicenseRepository licenseRepository;
+    private final PricingRepository pricingRepository;
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
-    private final TrackRepository trackRepository;
-    private final PlaylistRepository playlistRepository;
 
     public LicenseService(LicenseRepository licenseRepository,
+                          PricingRepository pricingRepository,
                           ModelMapper modelMapper,
-                          UserRepository userRepository,
-                          TrackRepository trackRepository,
-                          PlaylistRepository playlistRepository) {
+                          UserRepository userRepository) {
         this.licenseRepository = licenseRepository;
+        this.pricingRepository = pricingRepository;
         this.modelMapper = modelMapper;
         this.userRepository = userRepository;
-        this.trackRepository = trackRepository;
-        this.playlistRepository = playlistRepository;
     }
 
     public List<LicenseDto> getActiveLicenses(Integer userId) {
@@ -48,45 +42,52 @@ public class LicenseService {
                 .collect(Collectors.toList());
     }
 
-    public LicenseDto createLicense(LicenseCreateDto licenseCreateDto, User user) {
-        License license = modelMapper.map(licenseCreateDto, License.class);
 
-        if (license.getTrack() == null && license.getPlaylist() == null) {
-            throw new IllegalArgumentException("License must have track or playlist");
+    @Transactional
+    public LicenseDto buyLicense(Integer priceId, User user) {
+        Pricing pricing = pricingRepository.findById(priceId)
+                .orElseThrow(() -> new EntityNotFoundException("Цена не найдена"));
+
+        // Проверяем, что цена активна
+        if (pricing.getValidTo().isBefore(LocalDateTime.now())) {
+            throw new IllegalStateException("Срок действия цены истек");
         }
 
-        // Устанавливаем связи
+        License license = new License();
         license.setUser(user);
-        setTrackOrPlaylist(license, licenseCreateDto);
+        license.setPricing(pricing);
+        license.setStartDate(LocalDate.now());
+        license.setEndDate(LocalDate.now().plusYears(1)); // Пример: подписка на год
 
         License savedLicense = licenseRepository.save(license);
         return convertToDto(savedLicense);
     }
 
-    private LicenseDto convertToDto(License license) {
-        LicenseDto dto = modelMapper.map(license, LicenseDto.class);
+    public LicenseDto createLicense(LicenseCreateDto dto, User user) {
+        License license = modelMapper.map(dto, License.class);
+        license.setUser(user);
 
-        // Ручной маппинг для вложенных зависимостей
-        if (license.getTrack() != null) {
-            dto.setTrack(modelMapper.map(license.getTrack(), TrackDto.class));
-        }
-        if (license.getPlaylist() != null) {
-            dto.setPlaylist(modelMapper.map(license.getPlaylist(), PlaylistDto.class));
+        // Находим Pricing по priceId из DTO
+        Pricing pricing = pricingRepository.findById(dto.getPriceId())
+                .orElseThrow(() -> new EntityNotFoundException("Pricing not found"));
+        license.setPricing(pricing);
+
+        License savedLicense = licenseRepository.save(license);
+        return convertToDto(savedLicense);
+    }
+
+    public LicenseDto convertToDto(License license) {
+        LicenseDto dto = new LicenseDto();
+        dto.setLicenseId(license.getLicenseId());
+        dto.setEndDate(license.getEndDate());
+
+        // Получаем название продукта через Pricing
+        if (license.getPricing().getTrack() != null) {
+            dto.setProductName(license.getPricing().getTrack().getTitle());
+        } else if (license.getPricing().getPlaylist() != null) {
+            dto.setProductName(license.getPricing().getPlaylist().getName());
         }
 
         return dto;
-    }
-
-    private void setTrackOrPlaylist(License license, LicenseCreateDto dto) {
-        if (dto.getTrackId() != null) {
-            Track track = trackRepository.findByTrackId(dto.getTrackId())
-                    .orElseThrow(() -> new EntityNotFoundException("Track not found"));
-            license.setTrack(track);
-        }
-        if (dto.getPlaylistId() != null) {
-            Playlist playlist = playlistRepository.findByPlaylistId(dto.getPlaylistId())
-                    .orElseThrow(() -> new EntityNotFoundException("Playlist not found"));
-            license.setPlaylist(playlist);
-        }
     }
 }
