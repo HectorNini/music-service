@@ -63,6 +63,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/licenses/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/payments/me").hasRole("USER")
                         .requestMatchers(HttpMethod.POST, "/api/licenses/buy").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, "/api/user").hasRole("USER")  // <-- КЛЮЧЕВОЕ ИЗМЕНЕНИЕ
 
 
                         .anyRequest().authenticated()

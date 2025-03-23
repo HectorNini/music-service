@@ -21,9 +21,23 @@ const TracksPage = () => {
       });
   }, []);
 
-  const handleBuy = (priceId) => {
-    // Логика покупки
-    console.log('Buy requested for priceId:', priceId);
+  const handleBuy = async (priceId) => {
+    try {
+      const response = await api.post('/licenses/buy', null, { 
+        params: { priceId } 
+      });
+      
+      // Обработка успешной покупки
+      console.log('Purchase successful:', response.data);
+      alert('Purchase successful!');
+      
+      // Обновление данных после покупки (если нужно)
+      // Например, можно перезагрузить список лицензий или обновить UI
+      
+    } catch (error) {
+      console.error('Purchase failed:', error);
+      alert('Purchase failed. Please try again.');
+    }
   };
 
   const filteredTracks = tracks
