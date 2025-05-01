@@ -32,7 +32,6 @@ public class TrackService {
         this.modelMapper = modelMapper;
     }
 
-
     public List<TrackDto> getAllTracks() {
         List<Track> tracks = trackRepository.findAll();
         return tracks.stream().map(track -> {
@@ -41,6 +40,7 @@ public class TrackService {
             dto.setTrackId(track.getTrackId());
             dto.setTitle(track.getTitle());
             dto.setArtist(track.getArtist());
+            dto.setDuration(track.getDuration());
 
             // Поиск актуальной цены
             pricingRepository.findActiveByTrackId(track.getTrackId())
@@ -74,6 +74,13 @@ public class TrackService {
     }
 
     private TrackDto convertToDto(Track track) {
-        return modelMapper.map(track, TrackDto.class);
+        TrackDto dto = modelMapper.map(track, TrackDto.class);
+        // Добавляем информацию о цене трека
+        pricingRepository.findActiveByTrackId(track.getTrackId())
+                .ifPresent(pricing -> {
+                    dto.setPriceId(pricing.getPriceId());
+                    dto.setPrice(pricing.getPrice());
+                });
+        return dto;
     }
 }

@@ -8,7 +8,6 @@ import ru.ispo.music_service.entity.Playlist;
 import ru.ispo.music_service.entity.Track;
 import ru.ispo.music_service.repository.PlaylistRepository;
 import ru.ispo.music_service.repository.PlaylistTrackRepository;
-import ru.ispo.music_service.entity.PlaylistTrack;
 import ru.ispo.music_service.repository.PricingRepository;
 
 import java.util.List;
@@ -17,7 +16,7 @@ import java.util.stream.Collectors;
 @Service
 public class PlaylistService {
     private final PlaylistRepository playlistRepository;
-    private final PlaylistTrackRepository playlistTrackRepository; // Добавьте репозиторий
+    private final PlaylistTrackRepository playlistTrackRepository;
     private final PricingRepository pricingRepository;
     private final ModelMapper modelMapper;
 
@@ -32,7 +31,7 @@ public class PlaylistService {
     public List<PlaylistDto> getAllPlaylists() {
         List<Playlist> playlists = playlistRepository.findAll();
         return playlists.stream()
-                .map(this::convertToDto) // Используем convertToDto для полного маппинга
+                .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
@@ -46,7 +45,12 @@ public class PlaylistService {
         List<Track> tracks = playlistTrackRepository.findTracksByPlaylistId(playlist.getPlaylistId());
         dto.setTracks(tracks.stream()
                 .map(track -> {
-                    TrackDto trackDto = modelMapper.map(track, TrackDto.class);
+                    TrackDto trackDto = new TrackDto();
+                    trackDto.setTrackId(track.getTrackId());
+                    trackDto.setTitle(track.getTitle());
+                    trackDto.setArtist(track.getArtist());
+                    trackDto.setDuration(track.getDuration());
+                    
                     // Добавляем информацию о цене трека
                     pricingRepository.findActiveByTrackId(track.getTrackId())
                             .ifPresent(pricing -> {

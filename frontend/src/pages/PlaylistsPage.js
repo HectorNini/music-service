@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
 import PlaylistList from '../components/PlaylistList';
+import './PlaylistsPage.css';
 
 const PlaylistsPage = () => {
   const [search, setSearch] = useState('');
@@ -16,7 +17,7 @@ const PlaylistsPage = () => {
         setLoading(false);
       })
       .catch(error => {
-        console.error('Error fetching playlists:', error);
+        console.error('Ошибка загрузки плейлистов:', error);
         setLoading(false);
       });
   }, []);
@@ -27,16 +28,12 @@ const PlaylistsPage = () => {
         params: { priceId } 
       });
       
-      // Обработка успешной покупки
-      console.log('Purchase successful:', response.data);
-      alert('Purchase successful!');
-      
-      // Обновление данных после покупки (если нужно)
-      // Например, можно перезагрузить список лицензий или обновить UI
+      console.log('Покупка успешна:', response.data);
+      alert('Покупка успешна!');
       
     } catch (error) {
-      console.error('Purchase failed:', error);
-      alert('Purchase failed. Please try again.');
+      console.error('Ошибка покупки:', error);
+      alert('Ошибка покупки. Пожалуйста, попробуйте снова.');
     }
   };
 
@@ -54,17 +51,18 @@ const PlaylistsPage = () => {
 
   return (
     <div className="catalog-page">
+      <h1>Плейлисты</h1>
       <div className="controls">
         <input 
           type="text" 
-          placeholder="Search playlists..." 
+          placeholder="Поиск плейлистов..." 
           value={search} 
           onChange={(e) => setSearch(e.target.value)}
         />
         <select value={sort} onChange={(e) => setSort(e.target.value)}>
-          <option value="name">Sort by Title</option>
-          <option value="price-asc">Price: Low to High</option>
-          <option value="price-desc">Price: High to Low</option>
+          <option value="name">Сортировать по названию</option>
+          <option value="price-asc">Цена: по возрастанию</option>
+          <option value="price-desc">Цена: по убыванию</option>
         </select>
       </div>
       <PlaylistList 
