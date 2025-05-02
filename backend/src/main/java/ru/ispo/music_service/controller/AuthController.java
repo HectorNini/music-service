@@ -51,7 +51,7 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Email is already registered");
         }
 
-        Role userRole = roleRepository.findByName("user")
+        Role userRole = roleRepository.findByName("USER")
                 .orElseThrow(() -> new RoleNotFoundException("Role 'USER' not found"));
 
         User user = new User();
@@ -79,7 +79,6 @@ public class AuthController {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.username(), request.password())
             );
-
             String token = jwtUtil.generateToken((UserDetails) authentication.getPrincipal());
             return ResponseEntity.ok(Map.of("token", token));
 

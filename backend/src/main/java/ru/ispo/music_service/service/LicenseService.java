@@ -6,10 +6,13 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import ru.ispo.music_service.dto.LicenseCreateDto;
 import ru.ispo.music_service.dto.LicenseDto;
+import ru.ispo.music_service.dto.TrackDto;
 import ru.ispo.music_service.entity.License;
 import ru.ispo.music_service.entity.Pricing;
+import ru.ispo.music_service.entity.Track;
 import ru.ispo.music_service.entity.User;
 import ru.ispo.music_service.repository.LicenseRepository;
+import ru.ispo.music_service.repository.PlaylistTrackRepository;
 import ru.ispo.music_service.repository.PricingRepository;
 import ru.ispo.music_service.repository.UserRepository;
 
@@ -21,15 +24,18 @@ import java.util.stream.Collectors;
 @Service
 public class LicenseService {
     private final LicenseRepository licenseRepository;
+    private final PlaylistTrackRepository playlistTrackRepository;
     private final PricingRepository pricingRepository;
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
 
     public LicenseService(LicenseRepository licenseRepository,
+                          PlaylistTrackRepository playlistTrackRepository,
                           PricingRepository pricingRepository,
                           ModelMapper modelMapper,
                           UserRepository userRepository) {
         this.licenseRepository = licenseRepository;
+        this.playlistTrackRepository = playlistTrackRepository;
         this.pricingRepository = pricingRepository;
         this.modelMapper = modelMapper;
         this.userRepository = userRepository;
@@ -81,11 +87,33 @@ public class LicenseService {
         dto.setLicenseId(license.getLicenseId());
         dto.setEndDate(license.getEndDate());
 
-        // Получаем название продукта через Pricing
+        // Получаем название продукта и треки через Pricing
         if (license.getPricing().getTrack() != null) {
-            dto.setProductName(license.getPricing().getTrack().getTitle());
+            Track track = license.getPricing().getTrack();
+            dto.setProductName(track.getTitle());
+            // Для одиночного трека создаем список из одного элемента
+            TrackDto trackDto = new TrackDto();
+            trackDto.setTrackId(track.getTrackId());
+            trackDto.setTitle(track.getTitle());
+            trackDto.setArtist(track.getArtist());
+            trackDto.setDuration(track.getDuration());
+            dto.setTracks(List.of(trackDto));
         } else if (license.getPricing().getPlaylist() != null) {
             dto.setProductName(license.getPricing().getPlaylist().getName());
+            // Получаем все треки из плейлиста
+            List<Track> tracks = playlistTrackRepository.findTracksByPlaylistId(
+                license.getPricing().getPlaylist().getPlaylistId()
+            );
+            dto.setTracks(tracks.stream()
+                .map(track -> {
+                    TrackDto trackDto = new TrackDto();
+                    trackDto.setTrackId(track.getTrackId());
+                    trackDto.setTitle(track.getTitle());
+                    trackDto.setArtist(track.getArtist());
+                    trackDto.setDuration(track.getDuration());
+                    return trackDto;
+                })
+                .collect(Collectors.toList()));
         }
 
         return dto;

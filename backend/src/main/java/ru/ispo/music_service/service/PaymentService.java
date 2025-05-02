@@ -71,6 +71,8 @@ public class PaymentService {
         dto.setPaymentId(payment.getPaymentId());
         dto.setAmount(payment.getAmount());
         dto.setPaymentDate(payment.getPaymentDate());
+        dto.setStatus(payment.getStatus());
+        dto.setPaymentMethod(payment.getPaymentMethod());
 
         // Получаем описание продукта из лицензии
         License license = payment.getLicense();

@@ -2,6 +2,7 @@ package ru.ispo.music_service.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import lombok.*;
 
@@ -18,4 +19,5 @@ public class LicenseDto {
     private Integer licenseId;
     private LocalDate endDate;
     private String productName;
+    private List<TrackDto> tracks;
 }

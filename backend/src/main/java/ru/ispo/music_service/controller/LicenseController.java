@@ -1,8 +1,8 @@
 package ru.ispo.music_service.controller;
 
-
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -12,11 +12,13 @@ import ru.ispo.music_service.dto.LicenseDto;
 import ru.ispo.music_service.dto.PaymentDto;
 import ru.ispo.music_service.entity.License;
 import ru.ispo.music_service.entity.User;
+import ru.ispo.music_service.repository.LicenseRepository;
 import ru.ispo.music_service.repository.UserRepository;
 import ru.ispo.music_service.service.LicenseService;
 import ru.ispo.music_service.service.PaymentService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/licenses")
@@ -24,11 +26,16 @@ public class LicenseController {
     private final LicenseService licenseService;
     private final PaymentService paymentService;
     private final UserRepository userRepository;
+    private final LicenseRepository licenseRepository;
 
-    public LicenseController(LicenseService licenseService, PaymentService paymentService, UserRepository userRepository) {
+    public LicenseController(LicenseService licenseService, 
+                           PaymentService paymentService, 
+                           UserRepository userRepository,
+                           LicenseRepository licenseRepository) {
         this.licenseService = licenseService;
         this.paymentService = paymentService;
         this.userRepository = userRepository;
+        this.licenseRepository = licenseRepository;
     }
 
     @PostMapping("/buy")
@@ -68,5 +75,15 @@ public class LicenseController {
 
         LicenseDto license = licenseService.createLicense(licenseCreateDto, user);
         return ResponseEntity.ok(license);
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<LicenseDto>> getAllLicenses() {
+        List<License> licenses = licenseRepository.findAll();
+        List<LicenseDto> licenseDtos = licenses.stream()
+                .map(licenseService::convertToDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(licenseDtos);
     }
 }

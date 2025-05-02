@@ -49,23 +49,19 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/tracks").permitAll() // Открыть доступ к трекам
-                        .requestMatchers(HttpMethod.GET, "/api/playlists").permitAll() // Открыть доступ к плейлистам
-                        // Только админы
-                        .requestMatchers(HttpMethod.POST, "/api/licenses").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/licenses/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/payments").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/licenses/**").hasRole("ADMIN")
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-
-
-                        // Пользователи
-                        .requestMatchers(HttpMethod.GET, "/api/licenses/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/payments/me").hasRole("USER")
-                        .requestMatchers(HttpMethod.POST, "/api/licenses/buy").hasRole("USER")
-                        .requestMatchers(HttpMethod.GET, "/api/user").hasRole("USER")  // <-- КЛЮЧЕВОЕ ИЗМЕНЕНИЕ
-
-
+                        .requestMatchers("/api/tracks").permitAll()
+                        .requestMatchers("/api/tracks/{id}").permitAll()
+                        .requestMatchers("/api/tracks/licensed").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/playlists").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/playlists/{id}").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/playlists").hasRole("ADMIN")
+                        .requestMatchers("/api/licenses").authenticated()
+                        .requestMatchers("/api/licenses/buy").authenticated()
+                        .requestMatchers("/api/licenses/create").hasRole("ADMIN")
+                        .requestMatchers("/api/payments").hasRole("ADMIN")
+                        .requestMatchers("/api/payments/user").authenticated()
+                        .requestMatchers("/api/user").authenticated()
+                        .requestMatchers("/api/user/all").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(
