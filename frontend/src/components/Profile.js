@@ -411,27 +411,27 @@ const Profile = ({ user, payments, licenses }) => {
           renderAdminPanel()
         ) : (
           <>
-            {/* Платежи */}
-            <div className="payments">
-              <h3>Платежи</h3>
-              {payments.length > 0 ? (
-                payments.map(payment => (
+        {/* Платежи */}
+        <div className="payments">
+          <h3>Платежи</h3>
+          {payments.length > 0 ? (
+            payments.map(payment => (
                   <div key={payment.paymentId} className="payment-item">
                     <p><strong>Товар:</strong> {payment.productDescription}</p>
                     <p><strong>Сумма:</strong> ${payment.amount}</p>
                     <p><strong>Дата:</strong> {new Date(payment.paymentDate).toLocaleDateString()}</p>
-                  </div>
-                ))
-              ) : (
-                <div>Нет платежей</div>
-              )}
-            </div>
+              </div>
+            ))
+          ) : (
+            <div>Нет платежей</div>
+          )}
+        </div>
   
-            {/* Лицензии */}
-            <div className="licenses">
-              <h3>Лицензии</h3>
-              {licenses.length > 0 ? (
-                licenses.map(license => (
+        {/* Лицензии */}
+        <div className="licenses">
+          <h3>Лицензии</h3>
+          {licenses.length > 0 ? (
+            licenses.map(license => (
                   <div 
                     key={license.licenseId} 
                     className="license-item"
@@ -439,12 +439,12 @@ const Profile = ({ user, payments, licenses }) => {
                   >
                     <p><strong>Продукт:</strong> {license.productName}</p>
                     <p><strong>Действует до:</strong> {new Date(license.endDate).toLocaleDateString()}</p>
-                  </div>
-                ))
-              ) : (
-                <div>Нет активных лицензий</div>
-              )}
-            </div>
+              </div>
+            ))
+          ) : (
+            <div>Нет активных лицензий</div>
+          )}
+        </div>
           </>
         )}
 

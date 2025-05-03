@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.ispo.music_service.dto.PlaylistCreateDto;
 import ru.ispo.music_service.dto.PlaylistDto;
 import ru.ispo.music_service.service.PlaylistService;
-import ru.ispo.music_service.service.UserService;
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
@@ -18,7 +17,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PlaylistController {
     private final PlaylistService playlistService;
-    private final UserService userService;
 
     @GetMapping
     public ResponseEntity<List<PlaylistDto>> getAllPlaylists() {

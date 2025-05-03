@@ -21,15 +21,21 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+public interface LicenseService {
+    List<LicenseDto> getActiveLicenses(Integer userId);
+    LicenseDto buyLicense(Integer priceId, User user);
+    LicenseDto createLicense(LicenseCreateDto dto, User user);
+    List<LicenseDto> getAllLicenses();
+}
+
 @Service
-public class LicenseService {
+class LicenseServiceImpl implements LicenseService {
     private final LicenseRepository licenseRepository;
     private final PlaylistTrackRepository playlistTrackRepository;
     private final PricingRepository pricingRepository;
     private final ModelMapper modelMapper;
-    private final UserRepository userRepository;
 
-    public LicenseService(LicenseRepository licenseRepository,
+    public LicenseServiceImpl(LicenseRepository licenseRepository,
                           PlaylistTrackRepository playlistTrackRepository,
                           PricingRepository pricingRepository,
                           ModelMapper modelMapper,
@@ -38,9 +44,9 @@ public class LicenseService {
         this.playlistTrackRepository = playlistTrackRepository;
         this.pricingRepository = pricingRepository;
         this.modelMapper = modelMapper;
-        this.userRepository = userRepository;
     }
 
+    @Override
     public List<LicenseDto> getActiveLicenses(Integer userId) {
         List<License> licenses = licenseRepository.findByUser_UserIdAndEndDateAfter(userId, LocalDate.now());
         return licenses.stream()
@@ -48,7 +54,7 @@ public class LicenseService {
                 .collect(Collectors.toList());
     }
 
-
+    @Override
     @Transactional
     public LicenseDto buyLicense(Integer priceId, User user) {
         Pricing pricing = pricingRepository.findById(priceId)
@@ -69,6 +75,7 @@ public class LicenseService {
         return convertToDto(savedLicense);
     }
 
+    @Override
     public LicenseDto createLicense(LicenseCreateDto dto, User user) {
         License license = modelMapper.map(dto, License.class);
         license.setUser(user);
@@ -80,6 +87,14 @@ public class LicenseService {
 
         License savedLicense = licenseRepository.save(license);
         return convertToDto(savedLicense);
+    }
+
+    @Override
+    public List<LicenseDto> getAllLicenses() {
+        List<License> licenses = licenseRepository.findAll();
+        return licenses.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
     public LicenseDto convertToDto(License license) {

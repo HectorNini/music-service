@@ -21,15 +21,22 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+public interface PlaylistService {
+    List<PlaylistDto> getAllPlaylists();
+    PlaylistDto createPlaylist(PlaylistCreateDto playlistCreateDto);
+    BigDecimal calculateSuggestedPrice(List<Integer> trackIds);
+    void deletePlaylist(Long id);
+}
+
 @Service
-public class PlaylistService {
+class PlaylistServiceImpl implements PlaylistService {
     private final PlaylistRepository playlistRepository;
     private final PlaylistTrackRepository playlistTrackRepository;
     private final PricingRepository pricingRepository;
     private final TrackRepository trackRepository;
     private final ModelMapper modelMapper;
 
-    public PlaylistService(PlaylistRepository playlistRepository,
+    public PlaylistServiceImpl(PlaylistRepository playlistRepository,
                            PlaylistTrackRepository playlistTrackRepository, 
                            PricingRepository pricingRepository, 
                            TrackRepository trackRepository,
@@ -41,6 +48,7 @@ public class PlaylistService {
         this.modelMapper = modelMapper;
     }
 
+    @Override
     public List<PlaylistDto> getAllPlaylists() {
         List<Playlist> playlists = playlistRepository.findAll();
         return playlists.stream()
@@ -48,6 +56,7 @@ public class PlaylistService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     @Transactional
     public PlaylistDto createPlaylist(PlaylistCreateDto playlistCreateDto) {
         Playlist playlist = new Playlist();
@@ -56,38 +65,18 @@ public class PlaylistService {
         
         playlist = playlistRepository.save(playlist);
 
-        // Добавляем треки в плейлист
         if (playlistCreateDto.getTrackIds() != null && !playlistCreateDto.getTrackIds().isEmpty()) {
-            for (int i = 0; i < playlistCreateDto.getTrackIds().size(); i++) {
-                Integer trackId = playlistCreateDto.getTrackIds().get(i);
-                Track track = trackRepository.findByTrackId(trackId)
-                        .orElseThrow(() -> new IllegalArgumentException("Track not found with id: " + trackId));
-
-                PlaylistTrack playlistTrack = new PlaylistTrack();
-                PlaylistTrackId id = new PlaylistTrackId();
-                id.setPlaylistId(playlist.getPlaylistId());
-                id.setTrackId(trackId);
-                playlistTrack.setId(id);
-                playlistTrack.setPlaylist(playlist);
-                playlistTrack.setTrack(track);
-                playlistTrack.setPosition(i);
-                playlistTrackRepository.save(playlistTrack);
-            }
+            addTracksToPlaylist(playlist, playlistCreateDto.getTrackIds());
         }
 
-        // Создаем цену для плейлиста
         if (playlistCreateDto.getPrice() != null) {
-            Pricing pricing = new Pricing();
-            pricing.setPlaylist(playlist);
-            pricing.setPrice(playlistCreateDto.getPrice());
-            pricing.setValidFrom(LocalDateTime.now());
-            pricing.setValidTo(LocalDateTime.now().plusYears(1)); // Цена действительна 1 год
-            pricingRepository.save(pricing);
+            createPlaylistPricing(playlist, playlistCreateDto.getPrice());
         }
 
         return convertToDto(playlist);
     }
 
+    @Override
     public BigDecimal calculateSuggestedPrice(List<Integer> trackIds) {
         if (trackIds == null || trackIds.isEmpty()) {
             return BigDecimal.ZERO;
@@ -100,33 +89,56 @@ public class PlaylistService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    @Override
+    @Transactional
+    public void deletePlaylist(Long id) {
+        Playlist playlist = playlistRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Playlist not found"));
+        
+        playlistTrackRepository.deleteAllByPlaylist(playlist);
+        
+        pricingRepository.findActiveByPlaylistId(playlist.getPlaylistId())
+            .ifPresent(pricingRepository::delete);
+        
+        playlistRepository.delete(playlist);
+    }
+
+    private void addTracksToPlaylist(Playlist playlist, List<Integer> trackIds) {
+        for (int i = 0; i < trackIds.size(); i++) {
+            Integer trackId = trackIds.get(i);
+            Track track = trackRepository.findByTrackId(trackId)
+                    .orElseThrow(() -> new IllegalArgumentException("Track not found with id: " + trackId));
+
+            PlaylistTrack playlistTrack = new PlaylistTrack();
+            PlaylistTrackId id = new PlaylistTrackId();
+            id.setPlaylistId(playlist.getPlaylistId());
+            id.setTrackId(trackId);
+            playlistTrack.setId(id);
+            playlistTrack.setPlaylist(playlist);
+            playlistTrack.setTrack(track);
+            playlistTrack.setPosition(i);
+            playlistTrackRepository.save(playlistTrack);
+        }
+    }
+
+    private void createPlaylistPricing(Playlist playlist, BigDecimal price) {
+        Pricing pricing = new Pricing();
+        pricing.setPlaylist(playlist);
+        pricing.setPrice(price);
+        pricing.setValidFrom(LocalDateTime.now());
+        pricing.setValidTo(LocalDateTime.now().plusYears(1));
+        pricingRepository.save(pricing);
+    }
+
     private PlaylistDto convertToDto(Playlist playlist) {
         PlaylistDto dto = new PlaylistDto();
         dto.setPlaylistId(playlist.getPlaylistId());
         dto.setName(playlist.getName());
         dto.setDescription(playlist.getDescription());
 
-        // Получаем связанные треки
         List<Track> tracks = playlistTrackRepository.findTracksByPlaylistId(playlist.getPlaylistId());
-        dto.setTracks(tracks.stream()
-                .map(track -> {
-                    TrackDto trackDto = new TrackDto();
-                    trackDto.setTrackId(track.getTrackId());
-                    trackDto.setTitle(track.getTitle());
-                    trackDto.setArtist(track.getArtist());
-                    trackDto.setDuration(track.getDuration());
-                    
-                    // Добавляем информацию о цене трека
-                    pricingRepository.findActiveByTrackId(track.getTrackId())
-                            .ifPresent(pricing -> {
-                                trackDto.setPriceId(pricing.getPriceId());
-                                trackDto.setPrice(pricing.getPrice());
-                            });
-                    return trackDto;
-                })
-                .collect(Collectors.toList()));
+        dto.setTracks(convertTracksToDto(tracks));
 
-        // Добавляем информацию о цене плейлиста
         pricingRepository.findActiveByPlaylistId(playlist.getPlaylistId())
                 .ifPresent(pricing -> {
                     dto.setPriceId(pricing.getPriceId());
@@ -136,19 +148,22 @@ public class PlaylistService {
         return dto;
     }
 
-    @Transactional
-    public void deletePlaylist(Long id) {
-        Playlist playlist = playlistRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Playlist not found"));
-        
-        // Удаляем все связи с треками
-        playlistTrackRepository.deleteAllByPlaylist(playlist);
-        
-        // Удаляем цену плейлиста, если она есть
-        pricingRepository.findActiveByPlaylistId(playlist.getPlaylistId())
-            .ifPresent(pricingRepository::delete);
-        
-        // Удаляем сам плейлист
-        playlistRepository.delete(playlist);
+    private List<TrackDto> convertTracksToDto(List<Track> tracks) {
+        return tracks.stream()
+                .map(track -> {
+                    TrackDto trackDto = new TrackDto();
+                    trackDto.setTrackId(track.getTrackId());
+                    trackDto.setTitle(track.getTitle());
+                    trackDto.setArtist(track.getArtist());
+                    trackDto.setDuration(track.getDuration());
+                    
+                    pricingRepository.findActiveByTrackId(track.getTrackId())
+                            .ifPresent(pricing -> {
+                                trackDto.setPriceId(pricing.getPriceId());
+                                trackDto.setPrice(pricing.getPrice());
+                            });
+                    return trackDto;
+                })
+                .collect(Collectors.toList());
     }
 }

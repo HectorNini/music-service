@@ -1,86 +1,110 @@
 package ru.ispo.music_service.service;
 
-import org.modelmapper.ModelMapper;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.ispo.music_service.dto.TrackCreateDto;
 import ru.ispo.music_service.dto.TrackDto;
+import ru.ispo.music_service.entity.License;
 import ru.ispo.music_service.entity.Track;
+import ru.ispo.music_service.mapper.TrackMapper;
 import ru.ispo.music_service.repository.LicenseRepository;
 import ru.ispo.music_service.repository.PlaylistTrackRepository;
-import ru.ispo.music_service.repository.PricingRepository;
 import ru.ispo.music_service.repository.TrackRepository;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+public interface TrackService {
+    List<TrackDto> getAllTracks();
+    TrackDto getTrackById(Integer trackId);
+    TrackDto createTrack(TrackCreateDto trackCreateDto);
+    TrackDto updateTrack(Integer trackId, TrackCreateDto trackCreateDto);
+    void deleteTrack(Integer trackId);
+    List<TrackDto> getTracksByPlaylistId(Integer playlistId);
+    List<TrackDto> getLicensedTracks(Integer userId);
+    TrackDto convertToDto(Track track);
+}
+
 @Service
-public class TrackService {
+@RequiredArgsConstructor
+class TrackServiceImpl implements TrackService {
     private final TrackRepository trackRepository;
     private final LicenseRepository licenseRepository;
     private final PlaylistTrackRepository playlistTrackRepository;
-    private final PricingRepository pricingRepository;
-    private final ModelMapper modelMapper;
+    private final TrackMapper trackMapper;
 
-    public TrackService(TrackRepository trackRepository,
-                        LicenseRepository licenseRepository,
-                        PlaylistTrackRepository playlistTrackRepository, PricingRepository pricingRepository, ModelMapper modelMapper) {
-        this.trackRepository = trackRepository;
-        this.licenseRepository = licenseRepository;
-        this.playlistTrackRepository = playlistTrackRepository;
-        this.pricingRepository = pricingRepository;
-        this.modelMapper = modelMapper;
-    }
-
+    @Override
     public List<TrackDto> getAllTracks() {
-        List<Track> tracks = trackRepository.findAll();
-        return tracks.stream().map(track -> {
-            TrackDto dto = new TrackDto();
-            // Маппинг базовых полей
-            dto.setTrackId(track.getTrackId());
-            dto.setTitle(track.getTitle());
-            dto.setArtist(track.getArtist());
-            dto.setDuration(track.getDuration());
-
-            // Поиск актуальной цены
-            pricingRepository.findActiveByTrackId(track.getTrackId())
-                    .ifPresent(pricing -> {
-                        dto.setPriceId(pricing.getPriceId());
-                        dto.setPrice(pricing.getPrice());
-                    });
-            return dto;
-        }).collect(Collectors.toList());
+        return trackRepository.findAll().stream()
+                .map(trackMapper::toDto)
+                .collect(Collectors.toList());
     }
 
+    @Override
+    public TrackDto getTrackById(Integer trackId) {
+        Track track = trackRepository.findById(trackId)
+                .orElseThrow(() -> new EntityNotFoundException("Track not found"));
+        return trackMapper.toDto(track);
+    }
+
+    @Override
+    @Transactional
+    public TrackDto createTrack(TrackCreateDto trackCreateDto) {
+        Track track = new Track();
+        track.setTitle(trackCreateDto.getTitle());
+        track.setArtist(trackCreateDto.getArtist());
+        track.setDuration(trackCreateDto.getDuration());
+        track.setFilePath(trackCreateDto.getFilePath());
+
+        Track savedTrack = trackRepository.save(track);
+        return trackMapper.toDto(savedTrack);
+    }
+
+    @Override
+    @Transactional
+    public TrackDto updateTrack(Integer trackId, TrackCreateDto trackCreateDto) {
+        Track track = trackRepository.findById(trackId)
+                .orElseThrow(() -> new EntityNotFoundException("Track not found"));
+
+        track.setTitle(trackCreateDto.getTitle());
+        track.setArtist(trackCreateDto.getArtist());
+        track.setDuration(trackCreateDto.getDuration());
+        track.setFilePath(trackCreateDto.getFilePath());
+
+        Track updatedTrack = trackRepository.save(track);
+        return trackMapper.toDto(updatedTrack);
+    }
+
+    @Override
+    @Transactional
+    public void deleteTrack(Integer trackId) {
+        if (!trackRepository.existsById(trackId)) {
+            throw new EntityNotFoundException("Track not found");
+        }
+        trackRepository.deleteById(trackId);
+    }
+
+    @Override
+    public List<TrackDto> getTracksByPlaylistId(Integer playlistId) {
+        return playlistTrackRepository.findTracksByPlaylistId(playlistId).stream()
+                .map(trackMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<TrackDto> getLicensedTracks(Integer userId) {
-        // Треки из прямых лицензий
-        List<Track> directTracks = trackRepository.findLicensedTracks(userId, LocalDate.now());
-
-        // Треки из лицензированных плейлистов
-        List<Integer> licensedPlaylistIds = licenseRepository.findActivePlaylistIds(userId, LocalDate.now());
-        List<Track> playlistTracks = playlistTrackRepository.findTracksByPlaylistIds(licensedPlaylistIds);
-
-        // Объединяем и удаляем дубликаты
-        List<Track> allTracks = new ArrayList<>();
-        allTracks.addAll(directTracks);
-        allTracks.addAll(playlistTracks);
-        allTracks = allTracks.stream()
-                .distinct()
-                .collect(Collectors.toList());
-
-        return allTracks.stream()
-                .map(this::convertToDto)
+        List<License> licenses = licenseRepository.findByUser_UserIdAndEndDateAfter(userId, LocalDate.now());
+        return licenses.stream()
+                .filter(license -> license.getPricing().getTrack() != null)
+                .map(license -> trackMapper.toDto(license.getPricing().getTrack()))
                 .collect(Collectors.toList());
     }
 
-    private TrackDto convertToDto(Track track) {
-        TrackDto dto = modelMapper.map(track, TrackDto.class);
-        // Добавляем информацию о цене трека
-        pricingRepository.findActiveByTrackId(track.getTrackId())
-                .ifPresent(pricing -> {
-                    dto.setPriceId(pricing.getPriceId());
-                    dto.setPrice(pricing.getPrice());
-                });
-        return dto;
+    @Override
+    public TrackDto convertToDto(Track track) {
+        return trackMapper.toDto(track);
     }
-}
+} 
