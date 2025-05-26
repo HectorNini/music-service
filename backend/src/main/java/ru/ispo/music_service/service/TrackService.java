@@ -8,12 +8,15 @@ import ru.ispo.music_service.dto.TrackCreateDto;
 import ru.ispo.music_service.dto.TrackDto;
 import ru.ispo.music_service.entity.License;
 import ru.ispo.music_service.entity.Track;
+import ru.ispo.music_service.entity.Pricing;
 import ru.ispo.music_service.mapper.TrackMapper;
 import ru.ispo.music_service.repository.LicenseRepository;
 import ru.ispo.music_service.repository.PlaylistTrackRepository;
 import ru.ispo.music_service.repository.TrackRepository;
+import ru.ispo.music_service.repository.PricingRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,6 +38,7 @@ class TrackServiceImpl implements TrackService {
     private final LicenseRepository licenseRepository;
     private final PlaylistTrackRepository playlistTrackRepository;
     private final TrackMapper trackMapper;
+    private final PricingRepository pricingRepository;
 
     @Override
     public List<TrackDto> getAllTracks() {
@@ -60,6 +64,16 @@ class TrackServiceImpl implements TrackService {
         track.setFilePath(trackCreateDto.getFilePath());
 
         Track savedTrack = trackRepository.save(track);
+
+        if (trackCreateDto.getPrice() != null) {
+            Pricing pricing = new Pricing();
+            pricing.setTrack(savedTrack);
+            pricing.setPrice(trackCreateDto.getPrice());
+            pricing.setValidFrom(LocalDateTime.now());
+            pricing.setValidTo(LocalDateTime.now().plusYears(1));
+            pricingRepository.save(pricing);
+        }
+
         return trackMapper.toDto(savedTrack);
     }
 
@@ -75,6 +89,25 @@ class TrackServiceImpl implements TrackService {
         track.setFilePath(trackCreateDto.getFilePath());
 
         Track updatedTrack = trackRepository.save(track);
+
+        if (trackCreateDto.getPrice() != null) {
+            pricingRepository.findActiveByTrackId(trackId)
+                    .ifPresentOrElse(
+                            existingPricing -> {
+                                existingPricing.setPrice(trackCreateDto.getPrice());
+                                pricingRepository.save(existingPricing);
+                            },
+                            () -> {
+                                Pricing newPricing = new Pricing();
+                                newPricing.setTrack(updatedTrack);
+                                newPricing.setPrice(trackCreateDto.getPrice());
+                                newPricing.setValidFrom(LocalDateTime.now());
+                                newPricing.setValidTo(LocalDateTime.now().plusYears(1));
+                                pricingRepository.save(newPricing);
+                            }
+                    );
+        }
+
         return trackMapper.toDto(updatedTrack);
     }
 
@@ -107,4 +140,4 @@ class TrackServiceImpl implements TrackService {
     public TrackDto convertToDto(Track track) {
         return trackMapper.toDto(track);
     }
-} 
+}

@@ -8,6 +8,15 @@ const Profile = ({ user, payments, licenses }) => {
     const [selectedLicense, setSelectedLicense] = useState(null);
     const [activeTab, setActiveTab] = useState('users'); // 'users', 'tracks', 'playlists', 'licenses'
     const [showCreatePlaylistModal, setShowCreatePlaylistModal] = useState(false);
+    const [showCreateTrackModal, setShowCreateTrackModal] = useState(false);
+    const [selectedTrack, setSelectedTrack] = useState(null);
+    const [newTrack, setNewTrack] = useState({
+        title: '',
+        artist: '',
+        duration: '',
+        price: '',
+        filePath: ''
+    });
     const [newPlaylist, setNewPlaylist] = useState({
       name: '',
       description: '',
@@ -160,6 +169,94 @@ const Profile = ({ user, payments, licenses }) => {
       }
     };
   
+    const handleEditTrack = async (track) => {
+        setSelectedTrack(track);
+        setNewTrack({
+            title: track.title,
+            artist: track.artist,
+            duration: track.duration,
+            price: track.pricing?.price || '',
+            filePath: track.filePath || ''
+        });
+        setShowCreateTrackModal(true);
+    };
+  
+    const handleDeleteTrack = async (trackId) => {
+        if (window.confirm('Вы уверены, что хотите удалить этот трек?')) {
+            try {
+                setLoading(true);
+                await api.delete(`/tracks/${trackId}`);
+                const updatedTracks = await fetchAdminData('tracks');
+                setAdminData(prev => ({ ...prev, tracks: updatedTracks }));
+            } catch (err) {
+                console.error('Error deleting track:', err);
+                setError(`Ошибка при удалении трека: ${err.response?.data || err.message}`);
+            } finally {
+                setLoading(false);
+            }
+        }
+    };
+  
+    const handleCreateTrack = async () => {
+        try {
+            setLoading(true);
+            const response = await api.post('/tracks', {
+                title: newTrack.title,
+                artist: newTrack.artist,
+                duration: newTrack.duration,
+                filePath: newTrack.filePath,
+                price: newTrack.price ? parseFloat(newTrack.price) : null
+            });
+
+            const updatedTracks = await fetchAdminData('tracks');
+            setAdminData(prev => ({ ...prev, tracks: updatedTracks }));
+            setShowCreateTrackModal(false);
+            setSelectedTrack(null);
+            setNewTrack({
+                title: '',
+                artist: '',
+                duration: '',
+                price: '',
+                filePath: ''
+            });
+        } catch (err) {
+            console.error('Error creating/updating track:', err);
+            setError(`Ошибка при создании/обновлении трека: ${err.response?.data || err.message}`);
+        } finally {
+            setLoading(false);
+        }
+    };
+  
+    const handleUpdateTrack = async () => {
+        try {
+            setLoading(true);
+            await api.put(`/tracks/${selectedTrack.trackId}`, {
+                title: newTrack.title,
+                artist: newTrack.artist,
+                duration: newTrack.duration,
+                filePath: newTrack.filePath,
+                price: newTrack.price ? parseFloat(newTrack.price) : null
+            });
+
+            const updatedTracks = await fetchAdminData('tracks');
+            setAdminData(prev => ({ ...prev, tracks: updatedTracks }));
+            setShowCreateTrackModal(false);
+            setSelectedTrack(null);
+            setNewTrack({
+                title: '',
+                artist: '',
+                duration: '',
+                price: '',
+                filePath: ''
+            });
+        } catch (err) {
+            console.error('Error updating track:', err);
+            setError(`Ошибка при обновлении трека: ${err.response?.data || err.message}`);
+        } finally {
+            setLoading(false);
+        }
+    };
+  
     // Добавим защиту от undefined
     if (!user) return <div>Загрузка...</div>;
   
@@ -236,6 +333,14 @@ const Profile = ({ user, payments, licenses }) => {
             {activeTab === 'tracks' && (
               <div className="admin-section">
                 <h3>Управление треками</h3>
+                <div className="admin-actions">
+                  <button 
+                    className="action-button"
+                    onClick={() => setShowCreateTrackModal(true)}
+                  >
+                    Добавить трек
+                  </button>
+                </div>
                 <div className="admin-table">
                   <table>
                     <thead>
@@ -245,6 +350,7 @@ const Profile = ({ user, payments, licenses }) => {
                         <th>Исполнитель</th>
                         <th>Длительность</th>
                         <th>Цена</th>
+                        <th>Действия</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -255,6 +361,20 @@ const Profile = ({ user, payments, licenses }) => {
                           <td>{track.artist}</td>
                           <td>{formatDuration(track.duration)}</td>
                           <td>${track.price}</td>
+                          <td>
+                            <button
+                              className="action-button"
+                              onClick={() => handleEditTrack(track)}
+                            >
+                              Редактировать
+                            </button>
+                            <button
+                              className="action-button delete-button"
+                              onClick={() => handleDeleteTrack(track.trackId)}
+                            >
+                              Удалить
+                            </button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -313,14 +433,6 @@ const Profile = ({ user, payments, licenses }) => {
             {activeTab === 'licenses' && (
               <div className="admin-section">
                 <h3>Управление лицензиями</h3>
-                <div className="admin-actions">
-                  <button 
-                    className="action-button"
-                    onClick={() => handleAction('createLicense', {})}
-                  >
-                    Выдать лицензию
-                  </button>
-                </div>
                 <div className="admin-table">
                   <table>
                     <thead>
@@ -545,6 +657,75 @@ const Profile = ({ user, payments, licenses }) => {
                     disabled={!newPlaylist.name || newPlaylist.trackIds.length === 0}
                   >
                     Создать
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showCreateTrackModal && (
+          <div className="modal" onClick={() => setShowCreateTrackModal(false)}>
+            <div className="modal-content" onClick={e => e.stopPropagation()}>
+              <div className="modal-header">
+                <h2>{selectedTrack ? 'Редактирование трека' : 'Создание трека'}</h2>
+                <button className="close-button" onClick={() => setShowCreateTrackModal(false)}>×</button>
+              </div>
+              <div className="modal-body">
+                <div className="form-group">
+                  <label>Название:</label>
+                  <input
+                    type="text"
+                    value={newTrack.title}
+                    onChange={(e) => setNewTrack(prev => ({ ...prev, title: e.target.value }))}
+                    placeholder="Введите название трека"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Исполнитель:</label>
+                  <input
+                    type="text"
+                    value={newTrack.artist}
+                    onChange={(e) => setNewTrack(prev => ({ ...prev, artist: e.target.value }))}
+                    placeholder="Введите исполнителя"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Длительность:</label>
+                  <input
+                    type="text"
+                    value={newTrack.duration}
+                    onChange={(e) => setNewTrack(prev => ({ ...prev, duration: e.target.value }))}
+                    placeholder="Введите длительность трека в секундах"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Путь к файлу:</label>
+                  <input
+                    type="text"
+                    value={newTrack.filePath}
+                    onChange={(e) => setNewTrack(prev => ({ ...prev, filePath: e.target.value }))}
+                    placeholder="Введите путь к аудиофайлу"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Цена:</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={newTrack.price}
+                    onChange={(e) => setNewTrack(prev => ({ ...prev, price: e.target.value }))}
+                    placeholder="Введите цену трека"
+                  />
+                </div>
+                <div className="modal-footer">
+                  <button 
+                    className="action-button"
+                    onClick={selectedTrack ? handleUpdateTrack : handleCreateTrack}
+                    disabled={!newTrack.title || !newTrack.artist || !newTrack.duration || !newTrack.filePath}
+                  >
+                    {selectedTrack ? 'Сохранить' : 'Создать'}
                   </button>
                 </div>
               </div>

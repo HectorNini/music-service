@@ -27,7 +27,7 @@ public class UserService implements UserDetailsService {
                     logger.error("User not found with username: {}", username);
                     return new UsernameNotFoundException("User not found");
                 });
-        
+
         logger.info("Found user: {}, role: {}", user.getUsername(), user.getRole().getName());
         logger.info("User authorities: {}", user.getAuthorities());
 
