@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
-import TrackList from '../components/TrackList';
+import TrackList from '../components/TrackList/TrackList';
 import './TracksPage.css';
 
 const TracksPage = () => {

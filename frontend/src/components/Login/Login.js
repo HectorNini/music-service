@@ -1,4 +1,5 @@
 import React from 'react';
+import './Login.css';
 
 const Login = ({ username, password, error, onUsernameChange, onPasswordChange, onSubmit }) => {
   return (
@@ -30,4 +31,4 @@ const Login = ({ username, password, error, onUsernameChange, onPasswordChange, 
   );
 };
 
-export default Login;
+export default Login; 

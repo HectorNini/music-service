@@ -1,7 +1,8 @@
 // src/components/PrivateRoute.jsx
 import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
+import './PrivateRoute.css';
 
 const PrivateRoute = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -20,4 +21,4 @@ const PrivateRoute = ({ children }) => {
   return (isAuthenticated && !isLoading) ? children : null;
 };
 
-export default PrivateRoute;
+export default PrivateRoute; 

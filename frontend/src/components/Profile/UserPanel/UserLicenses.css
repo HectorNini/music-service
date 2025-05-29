@@ -1,0 +1,31 @@
+/* Styles for UserLicenses component */
+.licenses {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.licenses h3 {
+  color: #2c3e50;
+  margin-top: 0;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.license-item {
+  border: 1px solid #eee;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.license-item:hover {
+  background: #f8f9fa;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+} 

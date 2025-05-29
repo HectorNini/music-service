@@ -59,4 +59,4 @@ const PlaylistList = ({ playlists, loading, onBuy }) => {
   );
 };
 
-export default PlaylistList;
+export default PlaylistList; 

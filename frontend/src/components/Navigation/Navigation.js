@@ -1,6 +1,7 @@
 // src/components/Navigation.jsx
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
+import './Navigation.css';
 
 const Navigation = () => {
   const navigate = useNavigate();
@@ -38,4 +39,4 @@ const Navigation = () => {
   );
 };
 
-export default Navigation;
+export default Navigation; 

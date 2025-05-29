@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
-import PlaylistList from '../components/PlaylistList';
+import PlaylistList from '../components/PlaylistList/PlaylistList';
 import './PlaylistsPage.css';
 
 const PlaylistsPage = () => {

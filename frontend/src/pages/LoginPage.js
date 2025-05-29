@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
-import Login from '../components/Login';
+import Login from '../components/Login/Login';
 import { useAuth } from '../contexts/AuthContext';
 
 const LoginPage = () => {

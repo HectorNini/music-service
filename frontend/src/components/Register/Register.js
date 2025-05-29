@@ -1,4 +1,5 @@
 import React from 'react';
+import './Register.css';
 
 const Register = ({ formData, error, onSubmit, onInputChange }) => {
   return (
@@ -44,4 +45,4 @@ const Register = ({ formData, error, onSubmit, onInputChange }) => {
   );
 };
 
-export default Register;
+export default Register; 

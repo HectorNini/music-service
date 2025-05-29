@@ -1,3 +1,5 @@
+/* Импортируйте этот файл только в TrackList.js */ 
+
 .track-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
