@@ -27,7 +27,7 @@ public interface LicenseRepository extends JpaRepository<License, Long> {
            "JOIN l.pricing p " +
            "JOIN p.track t " +
            "GROUP BY t.title " +
-           "ORDER BY count DESC")
+           "ORDER BY count DESC LIMIT 10")
     List<Map<String, Object>> findTopTracks(int limit);
 
     @Query("SELECT p.name as name, COUNT(l) as count " +
@@ -35,6 +35,6 @@ public interface LicenseRepository extends JpaRepository<License, Long> {
            "JOIN l.pricing pr " +
            "JOIN pr.playlist p " +
            "GROUP BY p.name " +
-           "ORDER BY count DESC")
+           "ORDER BY count DESC LIMIT 10")
     List<Map<String, Object>> findTopPlaylists(int limit);
 }
