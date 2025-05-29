@@ -20,7 +20,7 @@ const LoginPage = () => {
     e.preventDefault();
     try {
       const response = await api.post('/auth/login', credentials);
-      login(response.data.token);
+      await login(response.data.token);
       navigate('/profile');
     } catch (err) {
       setError('Неверные учетные данные');

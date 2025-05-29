@@ -8,6 +8,7 @@ import PlaylistsPage from './pages/PlaylistsPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProfilePage from './pages/ProfilePage';
+import AdminPanel from './pages/AdminPanel';
 import PrivateRoute from './components/PrivateRoute';
 import './styles/global.css';
 
@@ -28,6 +29,14 @@ const App = () => {
               element={
                 <PrivateRoute>
                   <ProfilePage />
+                </PrivateRoute>
+              } 
+            />
+            <Route 
+              path="/admin" 
+              element={
+                <PrivateRoute>
+                  <AdminPanel />
                 </PrivateRoute>
               } 
             />

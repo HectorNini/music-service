@@ -4,12 +4,14 @@ import { useAuth } from '../contexts/AuthContext';
 
 const Navigation = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
+
+  const isAdmin = user?.role === 'ADMIN';
 
   return (
     <nav className="main-nav">
@@ -22,6 +24,7 @@ const Navigation = () => {
         {isAuthenticated ? (
           <>
             <Link to="/profile">Личный кабинет</Link>
+            {isAdmin && <Link to="/admin">Панель администратора</Link>}
             <button onClick={handleLogout}>Выйти</button>
           </>
         ) : (
