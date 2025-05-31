@@ -5,7 +5,6 @@ import UserPayments from './UserPanel/UserPayments';
 import UserLicenses from './UserPanel/UserLicenses';
 import LicenseDetailsModal from './UserPanel/LicenseDetailsModal';
 import AdminPanel from './AdminPanel/AdminPanel';
-import './Profile.css';
 
 const Profile = ({ user, payments, licenses }) => {
   const [selectedLicense, setSelectedLicense] = useState(null);
@@ -24,10 +23,10 @@ const Profile = ({ user, payments, licenses }) => {
     <div className="profile-container">
       <ProfileInfo user={user} />
       {!isAdmin && (
-        <>
-          <UserPayments payments={payments} />
+        <div className="user-panels-container info-sections-container">
           <UserLicenses licenses={licenses} onSelect={setSelectedLicense} />
-        </>
+          <UserPayments payments={payments} />
+        </div>
       )}
       {selectedLicense && !isAdmin && (
         <LicenseDetailsModal license={selectedLicense} onClose={() => setSelectedLicense(null)} formatDuration={formatDuration} />

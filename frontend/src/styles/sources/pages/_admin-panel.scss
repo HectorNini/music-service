@@ -1,0 +1,77 @@
+@import '../_variables.scss';
+
+.admin-panel-container {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1rem; // p-4
+}
+
+.admin-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem; // mb-6
+
+  h1 {
+    font-size: 1.5rem; // text-2xl
+    font-weight: bold; // font-bold
+  }
+
+  button {
+    background-color: $color-dark-blue; // Используем $color-dark-blue вместо $color-blue
+    &:hover {
+      background-color: darken($color-dark-blue, 10%); // Используем $color-dark-blue
+    }
+    color: white; // Специфичный стиль: цвет текста
+    font-weight: bold; // Специфичный стиль: жирный шрифт
+    padding: 0.5rem 1rem; // Специфичный стиль: padding
+    border-radius: 0.25rem; // Специфичный стиль: радиус скругления
+    transition: background-color 0.2s ease-in-out; // Специфичный стиль: переход
+  }
+}
+
+.user-count-section {
+  margin-bottom: 2rem; // mb-8
+
+  h2 {
+    font-size: 1.25rem; // text-xl
+    font-weight: 600; // font-semibold
+    margin-bottom: 1rem; // mb-4
+  }
+
+  .count-box {
+    background-color: white; // bg-white
+    padding: 1rem; // p-4
+    border-radius: 0.5rem; // rounded-lg
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); // shadow
+
+    p {
+      font-size: 1.875rem; // text-3xl
+      font-weight: bold; // font-bold
+    }
+  }
+}
+
+.charts-section {
+  display: grid;
+  grid-template-columns: 1fr; // grid-cols-1
+  gap: 2rem; // gap-8
+
+  @media (min-width: 768px) { // md:grid-cols-2
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .chart-box {
+    background-color: white; // bg-white
+    padding: 1rem; // p-4
+    border-radius: 0.5rem; // rounded-lg
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); // shadow
+
+    h2 {
+      font-size: 1.25rem; // text-xl
+      font-weight: 600; // font-semibold
+      margin-bottom: 1rem; // mb-4
+    }
+  }
+} 

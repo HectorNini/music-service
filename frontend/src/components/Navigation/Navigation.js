@@ -1,7 +1,6 @@
 // src/components/Navigation.jsx
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import './Navigation.css';
 
 const Navigation = () => {
   const navigate = useNavigate();
@@ -15,13 +14,13 @@ const Navigation = () => {
   const isAdmin = user?.role === 'ADMIN';
 
   return (
-    <nav className="main-nav">
-      <div className="nav-left">
+    <nav className="main-nav d-flex justify-content-between align-items-center">
+      <div className="nav-left d-flex">
         <Link to="/">Главная</Link>
         <Link to="/tracks">Треки</Link>
         <Link to="/playlists">Плейлисты</Link>
       </div>
-      <div className="nav-right">
+      <div className="nav-right d-flex">
         {isAuthenticated ? (
           <>
             <Link to="/profile">Личный кабинет</Link>

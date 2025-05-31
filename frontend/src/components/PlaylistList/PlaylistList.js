@@ -1,14 +1,28 @@
 import React, { useState } from 'react';
-import './PlaylistList.css';
+import LicenseDurationModal from '../Profile/LicenseDurationModal';
 
 const PlaylistList = ({ playlists, loading, onBuy }) => {
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
+  const [showDurationModal, setShowDurationModal] = useState(false);
 
   const formatDuration = (duration) => {
     if (!duration && duration !== 0) return '--:--';
     const minutes = Math.floor(duration / 60);
     const seconds = duration % 60;
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  const handleBuyClick = (playlist) => {
+    setSelectedPlaylist(playlist);
+    setShowDurationModal(true);
+  };
+
+  const handleDurationSelect = (months) => {
+    if (selectedPlaylist) {
+      onBuy(selectedPlaylist.priceId, months);
+      setShowDurationModal(false);
+      setSelectedPlaylist(null);
+    }
   };
 
   if (loading) return <div>Загрузка...</div>;
@@ -24,13 +38,13 @@ const PlaylistList = ({ playlists, loading, onBuy }) => {
           <div className="price-info">
             <span>Цена: ${playlist.price || '0.00'}</span>
           </div>
-          <button onClick={() => onBuy(playlist.priceId)}>
+          <button onClick={() => handleBuyClick(playlist)}>
             Купить
           </button>
         </div>
       ))}
 
-      {selectedPlaylist && (
+      {selectedPlaylist && !showDurationModal && (
         <div className="modal" onClick={() => setSelectedPlaylist(null)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
@@ -54,6 +68,17 @@ const PlaylistList = ({ playlists, loading, onBuy }) => {
             </div>
           </div>
         </div>
+      )}
+
+      {showDurationModal && selectedPlaylist && (
+        <LicenseDurationModal
+          onClose={() => {
+            setShowDurationModal(false);
+            setSelectedPlaylist(null);
+          }}
+          onSelect={handleDurationSelect}
+          basePrice={selectedPlaylist.price}
+        />
       )}
     </div>
   );

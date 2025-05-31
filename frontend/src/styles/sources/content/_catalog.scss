@@ -1,0 +1,36 @@
+@import '../_variables.scss';
+@import './_cards-panels.scss';
+@import '../common/_utilities.scss';
+
+.catalog-page {
+  @include page-container;
+
+  h1 {
+    color: $color-dark-blue; // Использование переменной
+    margin-bottom: 20px;
+  }
+}
+
+.controls {
+  @extend .card-panel;
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+  padding: 15px;
+
+  input {
+    flex: 1;
+    min-width: 0;
+  }
+
+  select {
+    width: 250px;
+  }
+
+  input:focus,
+  select:focus {
+    outline: none;
+    border-color: $color-dark-blue; // Использование переменной
+    box-shadow: 0 0 0 2px rgba($color-dark-blue, 0.2); // Использование переменной с прозрачностью
+  }
+} 

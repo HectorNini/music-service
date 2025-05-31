@@ -1,0 +1,104 @@
+@import '../_variables.scss';
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  @extend .card-panel;
+  max-width: 800px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+
+  h2 {
+    margin: 0;
+    color: $color-dark-blue;
+  }
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+
+  &:hover {
+    color: #333;
+  }
+}
+
+.modal-body {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.modal-footer {
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Tracks list in modal */
+.tracks-list {
+  margin-top: 20px;
+
+  h3 {
+    color: $color-dark-blue;
+    margin-bottom: 15px;
+  }
+}
+
+.tracks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+
+  .track-item {
+    @extend .card-panel;
+    background-color: #f8f9fa;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    padding: 12px;
+  }
+
+  .track-info {
+    h4 {
+      margin: 0 0 8px 0;
+      color: $color-dark-blue;
+    }
+
+    p {
+      margin: 4px 0;
+      color: #666;
+    }
+  }
+
+  .duration {
+    color: #888;
+    font-size: 0.9em;
+  }
+} 

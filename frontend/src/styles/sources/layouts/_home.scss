@@ -1,0 +1,84 @@
+@import '../_variables.scss';
+
+.home-container {
+  padding: 4rem 2rem;
+  text-align: center;
+  background-image: url('../../../assets/images/background.jpeg'); // Повторно указываем путь относительно _home.scss
+  background-size: cover; // Масштабируем картинку для покрытия всего контейнера
+  background-position: center; // Центрируем картинку
+  background-repeat: no-repeat; // Отключаем повторение картинки
+  min-height: 100vh; // Занимаем всю высоту вьюпорта
+  display: flex; // Используем flexbox для центрирования
+  flex-direction: column;
+  justify-content: center; // Центрируем по вертикали
+  align-items: center; // Центрируем по горизонтали
+  font-family: sans-serif; 
+  position: relative; 
+  overflow: hidden; 
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); 
+    z-index: 1; 
+  }
+}
+
+
+.intro-section {
+  max-width: 800px;
+  margin: 0 auto 40px auto;
+  color: white;
+  padding: 20px;
+  z-index: 2; // Контент должен быть над оверлеем
+  position: relative; // Убеждаемся, что контент позиционирован относительно контейнера
+
+  .home-heading {
+    font-size: 3.5rem; // Увеличиваем размер шрифта
+    margin-bottom: 20px; // Увеличиваем нижний отступ
+    color: white; // Устанавливаем белый цвет для лучшей читаемости
+    font-weight: 700; // Делаем шрифт более жирным
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); // Добавляем тень текста
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    text-shadow: none;
+  }
+
+  p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    color: white; // Устанавливаем белый цвет для лучшей читаемости
+    opacity: 1;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); // Добавляем тень текста
+  }
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.cta-button {
+  @extend .action-button;
+  background: $color-light-red;
+  color: white; // Убедимся, что текст на кнопках белый
+  padding: 1rem 2rem;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: bold;
+  z-index: 2; // Кнопки должны быть над оверлеем
+  position: relative; // Убеждаемся, что кнопки позиционированы относительно контейнера
+
+  &:hover {
+    background: darken($color-light-red, 10%);
+  }
+} 

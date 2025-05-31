@@ -1,9 +1,9 @@
 import React from 'react';
 
 const AdminPlaylists = ({ playlists, tracks, handlers, modals, state, formatDuration }) => (
-  <div className="admin-section">
+  <div className="admin-section mb-30">
     <h3>Управление плейлистами</h3>
-    <div className="admin-actions">
+    <div className="admin-actions mb-20 d-flex gap-10">
       <button 
         className="action-button"
         onClick={handlers.openCreatePlaylistModal}
@@ -32,12 +32,14 @@ const AdminPlaylists = ({ playlists, tracks, handlers, modals, state, formatDura
               <td>{playlist.tracks?.length || 0}</td>
               <td>${playlist.price}</td>
               <td>
-                <button
-                  className="action-button delete-button"
-                  onClick={() => handlers.deletePlaylist(playlist.playlistId)}
-                >
-                  Удалить
-                </button>
+                <div className="admin-table-actions">
+                  <button
+                    className="action-button delete-button"
+                    onClick={() => handlers.deletePlaylist(playlist.playlistId)}
+                  >
+                    Удалить
+                  </button>
+                </div>
               </td>
             </tr>
           ))}

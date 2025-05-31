@@ -2,7 +2,7 @@ import React from 'react';
 import './Profile.css';
 
 const UserPayments = ({ payments }) => (
-  <div className="payments">
+  <div className="payments card-panel mb-30">
     <h3>Платежи</h3>
     {payments.length > 0 ? (
       payments.map(payment => (

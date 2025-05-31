@@ -1,9 +1,9 @@
 import React from 'react';
 
 const AdminTracks = ({ tracks, formatDuration, handlers, modals, state }) => (
-  <div className="admin-section">
+  <div className="admin-section mb-30">
     <h3>Управление треками</h3>
-    <div className="admin-actions">
+    <div className="admin-actions mb-20 d-flex gap-10">
       <button 
         className="action-button"
         onClick={handlers.openCreateTrackModal}
@@ -32,18 +32,20 @@ const AdminTracks = ({ tracks, formatDuration, handlers, modals, state }) => (
               <td>{formatDuration(track.duration)}</td>
               <td>${track.price}</td>
               <td>
-                <button
-                  className="action-button"
-                  onClick={() => handlers.editTrack(track)}
-                >
-                  Редактировать
-                </button>
-                <button
-                  className="action-button delete-button"
-                  onClick={() => handlers.deleteTrack(track.trackId)}
-                >
-                  Удалить
-                </button>
+                <div className="admin-table-actions">
+                  <button
+                    className="action-button"
+                    onClick={() => handlers.editTrack(track)}
+                  >
+                    Редактировать
+                  </button>
+                  <button
+                    className="action-button delete-button"
+                    onClick={() => handlers.deleteTrack(track.trackId)}
+                  >
+                    Удалить
+                  </button>
+                </div>
               </td>
             </tr>
           ))}

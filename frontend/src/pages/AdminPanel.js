@@ -12,7 +12,7 @@ import {
 import api from '../api';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import '../fonts/Roboto-Regular-normal.js';
+import '../styles/fonts/Roboto-Regular-normal.js';
 
 ChartJS.register(
     CategoryScale,
@@ -122,32 +122,29 @@ const AdminPanel = () => {
     };
 
     return (
-        <div className="container mx-auto p-4">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold">Панель администратора</h1>
+        <div className="admin-panel-container">
+            <div className="admin-panel-header">
+                <h1>Панель администратора</h1>
                 <button 
                     onClick={exportToPDF}
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                    className="export-button"
                 >
                     Экспорт в PDF
                 </button>
             </div>
             
-            <div className="mb-8">
-                <h2 className="text-xl font-semibold mb-4">Общее количество пользователей</h2>
-                <div className="bg-white p-4 rounded-lg shadow">
-                    <p className="text-3xl font-bold">{userCount}</p>
-                </div>
+            <div className="user-count-section">
+                <h2>Общее количество пользователей: {userCount}</h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="bg-white p-4 rounded-lg shadow">
-                    <h2 className="text-xl font-semibold mb-4">Топ треков</h2>
+            <div className="charts-section">
+                <div className="chart-box">
+                    <h2>Топ треков</h2>
                     <Bar data={tracksChartData} options={chartOptions} />
                 </div>
 
-                <div className="bg-white p-4 rounded-lg shadow">
-                    <h2 className="text-xl font-semibold mb-4">Топ плейлистов</h2>
+                <div className="chart-box">
+                    <h2>Топ плейлистов</h2>
                     <Bar data={playlistsChartData} options={chartOptions} />
                 </div>
             </div>

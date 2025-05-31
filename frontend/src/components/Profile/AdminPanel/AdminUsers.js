@@ -1,7 +1,7 @@
 import React from 'react';
 
 const AdminUsers = ({ users }) => (
-  <div className="admin-section">
+  <div className="admin-section mb-30">
     <h3>Управление пользователями</h3>
     <div className="admin-table">
       <table>

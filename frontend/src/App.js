@@ -10,7 +10,7 @@ import RegisterPage from './pages/RegisterPage';
 import ProfilePage from './pages/ProfilePage';
 import AdminPanel from './pages/AdminPanel';
 import PrivateRoute from './components/PrivateRoute/PrivateRoute';
-import './styles/global.css';
+import './styles/main.scss';
 
 const App = () => {
   return (

@@ -1,7 +1,7 @@
 import React from 'react';
 
 const AdminLicenses = ({ licenses }) => (
-  <div className="admin-section">
+  <div className="admin-section mb-30">
     <h3>Управление лицензиями</h3>
     <div className="admin-table">
       <table>

@@ -1,5 +1,4 @@
 import React from 'react';
-import './Register.css';
 
 const Register = ({ formData, error, onSubmit, onInputChange }) => {
   return (

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
 import PlaylistList from '../components/PlaylistList/PlaylistList';
-import './PlaylistsPage.css';
+import CatalogControls from '../components/CatalogControls/CatalogControls';
 
 const PlaylistsPage = () => {
   const [search, setSearch] = useState('');
@@ -22,10 +22,10 @@ const PlaylistsPage = () => {
       });
   }, []);
 
-  const handleBuy = async (priceId) => {
+  const handleBuy = async (priceId, months) => {
     try {
       const response = await api.post('/licenses/buy', null, { 
-        params: { priceId } 
+        params: { priceId, months } 
       });
       
       console.log('Покупка успешна:', response.data);
@@ -52,19 +52,18 @@ const PlaylistsPage = () => {
   return (
     <div className="catalog-page">
       <h1>Плейлисты</h1>
-      <div className="controls">
-        <input 
-          type="text" 
-          placeholder="Поиск плейлистов..." 
-          value={search} 
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <select value={sort} onChange={(e) => setSort(e.target.value)}>
-          <option value="name">Сортировать по названию</option>
-          <option value="price-asc">Цена: по возрастанию</option>
-          <option value="price-desc">Цена: по убыванию</option>
-        </select>
-      </div>
+      <CatalogControls
+        search={search}
+        setSearch={setSearch}
+        sort={sort}
+        setSort={setSort}
+        placeholder="Поиск плейлистов..."
+        sortOptions={[
+          { value: 'name', label: 'Сортировать по названию' },
+          { value: 'price-asc', label: 'Цена: по возрастанию' },
+          { value: 'price-desc', label: 'Цена: по убыванию' },
+        ]}
+      />
       <PlaylistList 
         playlists={filteredPlaylists}
         loading={loading}

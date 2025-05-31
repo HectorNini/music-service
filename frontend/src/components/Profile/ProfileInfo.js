@@ -1,5 +1,4 @@
 import React from 'react';
-import './ProfileInfo.css';
 
 const ProfileInfo = ({ user }) => {
   if (!user) return null;

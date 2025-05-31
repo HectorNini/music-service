@@ -1,7 +1,7 @@
 import React from 'react';
 
 const AdminPayments = ({ payments }) => (
-  <div className="admin-section">
+  <div className="admin-section mb-30">
     <h3>Управление платежами</h3>
     <div className="admin-table">
       <table>

@@ -1,0 +1,21 @@
+/* Общие миксины */
+
+@mixin page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+@mixin adaptive-flex-columns($gap: 20px, $breakpoint: $breakpoint-md) {
+  display: flex;
+  gap: $gap;
+
+  > * {
+    flex: 1;
+    min-width: 0; // Позволяет flex элементу сжиматься
+  }
+
+  @media (max-width: $breakpoint) {
+    flex-direction: column;
+  }
+} 

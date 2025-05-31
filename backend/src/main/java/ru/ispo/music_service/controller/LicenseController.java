@@ -28,9 +28,10 @@ public class LicenseController {
     @PostMapping("/buy")
     public ResponseEntity<LicenseDto> buyLicense(
             @RequestParam("priceId") Integer priceId,
+            @RequestParam("months") Integer months,
             @AuthenticationPrincipal UserDetails userDetails) {
         User user = userService.findByUsername(userDetails.getUsername());
-        LicenseDto license = licenseService.buyLicense(priceId, user);
+        LicenseDto license = licenseService.buyLicense(priceId, months, user);
         PaymentDto payment = paymentService.createPayment(license.getLicenseId());
         return ResponseEntity.ok(license);
     }

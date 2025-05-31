@@ -16,6 +16,7 @@ import ru.ispo.music_service.repository.PlaylistTrackRepository;
 import ru.ispo.music_service.repository.PricingRepository;
 import ru.ispo.music_service.repository.UserRepository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
 
 public interface LicenseService {
     List<LicenseDto> getActiveLicenses(Integer userId);
-    LicenseDto buyLicense(Integer priceId, User user);
+    LicenseDto buyLicense(Integer priceId, Integer months, User user);
     LicenseDto createLicense(LicenseCreateDto dto, User user);
     List<LicenseDto> getAllLicenses();
 }
@@ -56,7 +57,7 @@ class LicenseServiceImpl implements LicenseService {
 
     @Override
     @Transactional
-    public LicenseDto buyLicense(Integer priceId, User user) {
+    public LicenseDto buyLicense(Integer priceId, Integer months, User user) {
         Pricing pricing = pricingRepository.findById(priceId)
                 .orElseThrow(() -> new EntityNotFoundException("Цена не найдена"));
 
@@ -65,14 +66,34 @@ class LicenseServiceImpl implements LicenseService {
             throw new IllegalStateException("Срок действия цены истек");
         }
 
+        // Рассчитываем скидку в зависимости от срока
+        BigDecimal discountRate = calculateDiscountRate(months);
+        BigDecimal finalPrice = pricing.getPrice()
+                .multiply(BigDecimal.valueOf(months))
+                .multiply(discountRate);
+
+        // Обновляем цену в Pricing
+        pricing.setPrice(finalPrice);
+        pricingRepository.save(pricing);
+
         License license = new License();
         license.setUser(user);
         license.setPricing(pricing);
         license.setStartDate(LocalDate.now());
-        license.setEndDate(LocalDate.now().plusYears(1)); // Пример: подписка на год
+        license.setEndDate(LocalDate.now().plusMonths(months));
 
         License savedLicense = licenseRepository.save(license);
         return convertToDto(savedLicense);
+    }
+
+    private BigDecimal calculateDiscountRate(Integer months) {
+        return switch (months) {
+            case 1 -> BigDecimal.ONE; // Базовая цена
+            case 3 -> new BigDecimal("0.9"); // 10% скидка
+            case 6 -> new BigDecimal("0.85"); // 15% скидка
+            case 12 -> new BigDecimal("0.8"); // 20% скидка
+            default -> throw new IllegalArgumentException("Неподдерживаемый срок лицензии");
+        };
     }
 
     @Override

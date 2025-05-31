@@ -2,7 +2,7 @@ import React from 'react';
 import './Profile.css';
 
 const UserLicenses = ({ licenses, onSelect }) => (
-  <div className="licenses">
+  <div className="licenses card-panel mb-30">
     <h3>Лицензии</h3>
     {licenses.length > 0 ? (
       licenses.map(license => (
