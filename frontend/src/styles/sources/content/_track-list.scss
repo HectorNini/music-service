@@ -1,0 +1,48 @@
+@import '../_variables.scss';
+
+.track-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.track-item {
+  @extend .card-panel;
+
+  h3 {
+    color: #333;
+  }
+
+  p {
+    color: #666;
+  }
+}
+
+.track-info {
+  flex: 1;
+}
+
+.duration {
+  color: #888;
+  font-size: 0.9em;
+}
+
+.price-info {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: $color-dark-blue;
+}
+
+.track-item button {
+  background-color: $color-dark-blue;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  align-self: flex-start;
+
+  &:hover {
+    background-color: darken($color-dark-blue, 10%);
+  }
+} 

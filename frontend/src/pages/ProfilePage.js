@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
-import Profile from '../components/Profile';
+import Profile from '../components/Profile/Profile';
 import { useAuth } from '../contexts/AuthContext';
 
 

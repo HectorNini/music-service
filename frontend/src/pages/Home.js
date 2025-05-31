@@ -5,14 +5,14 @@ const Home = () => {
   return (
     <div className="home-container">
       <section className="intro-section">
-        <h1>Welcome to Music Service</h1>
-        <p>Discover and license tracks and playlists</p>
+        <h1 className="home-heading">Добро пожаловать в Music Service</h1>
+        <p>Откройте мир музыки: слушайте, лицензируйте и управляйте вашей фонотекой с легкостью.</p>
         <div className="cta-buttons">
           <Link to="/tracks" className="cta-button">
-            Explore Tracks
+            Изучить треки
           </Link>
           <Link to="/playlists" className="cta-button">
-            Explore Playlists
+            Изучить плейлисты
           </Link>
         </div>
       </section>

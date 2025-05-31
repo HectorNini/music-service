@@ -1,89 +1,60 @@
 package ru.ispo.music_service.controller;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import ru.ispo.music_service.dto.LicenseCreateDto;
 import ru.ispo.music_service.dto.LicenseDto;
 import ru.ispo.music_service.dto.PaymentDto;
-import ru.ispo.music_service.entity.License;
 import ru.ispo.music_service.entity.User;
-import ru.ispo.music_service.repository.LicenseRepository;
-import ru.ispo.music_service.repository.UserRepository;
 import ru.ispo.music_service.service.LicenseService;
 import ru.ispo.music_service.service.PaymentService;
+import ru.ispo.music_service.service.UserService;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/licenses")
+@RequiredArgsConstructor
 public class LicenseController {
     private final LicenseService licenseService;
     private final PaymentService paymentService;
-    private final UserRepository userRepository;
-    private final LicenseRepository licenseRepository;
-
-    public LicenseController(LicenseService licenseService, 
-                           PaymentService paymentService, 
-                           UserRepository userRepository,
-                           LicenseRepository licenseRepository) {
-        this.licenseService = licenseService;
-        this.paymentService = paymentService;
-        this.userRepository = userRepository;
-        this.licenseRepository = licenseRepository;
-    }
+    private final UserService userService;
 
     @PostMapping("/buy")
     public ResponseEntity<LicenseDto> buyLicense(
             @RequestParam("priceId") Integer priceId,
+            @RequestParam("months") Integer months,
             @AuthenticationPrincipal UserDetails userDetails) {
-
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-        // Создаем лицензию
-        LicenseDto license = licenseService.buyLicense(priceId, user);
-
-        // Создаем платеж для этой лицензии
+        User user = userService.findByUsername(userDetails.getUsername());
+        LicenseDto license = licenseService.buyLicense(priceId, months, user);
         PaymentDto payment = paymentService.createPayment(license.getLicenseId());
-
-        // Возвращаем DTO лицензии
         return ResponseEntity.ok(license);
     }
 
-
     @GetMapping("/active")
     public ResponseEntity<List<LicenseDto>> getActiveLicenses(
-            @AuthenticationPrincipal UserDetails userDetails) { // Используем UserDetails
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            @AuthenticationPrincipal UserDetails userDetails) {
+        User user = userService.findByUsername(userDetails.getUsername());
         return ResponseEntity.ok(licenseService.getActiveLicenses(user.getUserId()));
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<LicenseDto> createLicense(
             @RequestBody @Valid LicenseCreateDto licenseCreateDto,
             @AuthenticationPrincipal UserDetails userDetails) {
-
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-        LicenseDto license = licenseService.createLicense(licenseCreateDto, user);
-        return ResponseEntity.ok(license);
+        User user = userService.findByUsername(userDetails.getUsername());
+        return ResponseEntity.ok(licenseService.createLicense(licenseCreateDto, user));
     }
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<LicenseDto>> getAllLicenses() {
-        List<License> licenses = licenseRepository.findAll();
-        List<LicenseDto> licenseDtos = licenses.stream()
-                .map(licenseService::convertToDto)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(licenseDtos);
+        return ResponseEntity.ok(licenseService.getAllLicenses());
     }
 }

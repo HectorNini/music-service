@@ -14,6 +14,6 @@ public class PlaylistDto {
     private String name;        // Название плейлиста
     private String description; // Описание плейлиста
     private List<TrackDto> tracks; // Добавлено поле для треков
-    private Integer priceId; // Новое поле
-    private BigDecimal price; // Новое поле
+    private Integer priceId; 
+    private BigDecimal price; 
 }

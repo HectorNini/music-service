@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
-import Login from '../components/Login';
+import Login from '../components/Login/Login';
 import { useAuth } from '../contexts/AuthContext';
 
 const LoginPage = () => {
@@ -20,7 +20,7 @@ const LoginPage = () => {
     e.preventDefault();
     try {
       const response = await api.post('/auth/login', credentials);
-      login(response.data.token);
+      await login(response.data.token);
       navigate('/profile');
     } catch (err) {
       setError('Неверные учетные данные');

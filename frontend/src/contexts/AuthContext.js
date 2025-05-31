@@ -9,10 +9,12 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState(null);
 
   const checkAuth = async () => {
     try {
-      await api.get('/user'); // Используем существующий эндпоинт
+      const response = await api.get('/user');
+      setUser(response.data);
       setIsAuthenticated(true);
     } catch (err) {
       logout();
@@ -21,14 +23,15 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const login = (token) => {
+  const login = async (token) => {
     localStorage.setItem('token', token);
-    setIsAuthenticated(true);
+    await checkAuth();
   };
 
   const logout = () => {
     localStorage.removeItem('token');
     setIsAuthenticated(false);
+    setUser(null);
   };
 
   useEffect(() => {
@@ -40,7 +43,8 @@ export const AuthProvider = ({ children }) => {
       isAuthenticated, 
       isLoading,
       login, 
-      logout 
+      logout,
+      user
     }}>
       {!isLoading && children}
     </AuthContext.Provider>

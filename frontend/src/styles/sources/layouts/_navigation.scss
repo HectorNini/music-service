@@ -1,0 +1,50 @@
+@import '../_variables.scss';
+
+/* Навигация */
+.main-nav {
+  background: $color-dark-blue; // Использование переменной
+  padding: 1rem 0;
+
+  .nav-left, .nav-right {
+    gap: 1.5rem;
+    padding: 0 20px;
+  }
+
+  a {
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    transition: background 0.3s;
+
+    &:hover {
+      background: darken($color-dark-blue, 5%); // Использование функции SASS
+      border-radius: 5px;
+    }
+  }
+
+  button {
+    @extend .action-button; // Расширяем .action-button
+    background: transparent; // Переопределяем фон
+    color: white; // Переопределяем цвет текста
+    border: 1px solid white; // Переопределяем рамку
+    padding: 0.5rem 1rem; // Проверяем и оставляем, если отличается от базового action-button
+    // Удалены: cursor, transition, &:hover
+
+    &:hover {
+      background: $color-light-red; // Специфичный цвет при наведении
+      border-color: $color-light-red; // Специфичный цвет рамки при наведении
+      opacity: 1; // Убираем базовую прозрачность при наведении, если не нужна
+    }
+
+    &:disabled {
+      // Если нужно переопределить стили disabled
+    }
+  }
+
+  @media (max-width: $breakpoint-md) {
+    .nav-right {
+      margin-top: 1rem;
+      width: 100%;
+    }
+  }
+} 

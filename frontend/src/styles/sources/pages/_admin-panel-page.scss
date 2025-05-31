@@ -1,0 +1,53 @@
+@import '../_variables.scss';
+@import '../content/_cards-panels.scss';
+@import '../controls/_buttons.scss';
+@import '../common/_utilities.scss';
+
+.admin-panel-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.admin-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+
+  h1 {
+    margin: 0;
+  }
+}
+
+.export-button {
+  @extend .action-button;
+  // Переопределить цвет, если нужно
+}
+
+.user-count-section {
+  display: flex; // Используем flexbox
+  align-items: center; // Выравниваем по центру по вертикали
+  margin-bottom: 30px;
+
+  h2 {
+    margin-bottom: 0; // Убираем нижний отступ у заголовка
+  }
+}
+
+.charts-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+
+  h2 {
+    margin-bottom: 15px;
+  }
+}
+
+.chart-box {
+  @extend .card-panel;
+  padding: 25px; // Adjusting padding
+  min-height: 300px;
+} 

@@ -10,6 +10,7 @@ import ru.ispo.music_service.entity.Payment;
 import ru.ispo.music_service.entity.User;
 import ru.ispo.music_service.repository.LicenseRepository;
 import ru.ispo.music_service.repository.PaymentRepository;
+import ru.ispo.music_service.repository.UserRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -17,19 +18,32 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+public interface PaymentService {
+    PaymentDto createPayment(Integer licenseId);
+    List<PaymentDto> getPaymentsByUser(User user);
+    List<PaymentDto> getPaymentsByUsername(String username);
+    List<PaymentDto> getAllPayments();
+    PaymentDto convertToDto(Payment payment);
+}
+
 @Service
-public class PaymentService {
+class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final LicenseRepository licenseRepository;
+    private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
-    public PaymentService(PaymentRepository paymentRepository,
-                          LicenseRepository licenseRepository, ModelMapper modelMapper) {
+    public PaymentServiceImpl(PaymentRepository paymentRepository,
+                          LicenseRepository licenseRepository,
+                          UserRepository userRepository,
+                          ModelMapper modelMapper) {
         this.paymentRepository = paymentRepository;
         this.licenseRepository = licenseRepository;
+        this.userRepository = userRepository;
         this.modelMapper = modelMapper;
     }
 
+    @Override
     @Transactional
     public PaymentDto createPayment(Integer licenseId) {
         License license = licenseRepository.findByLicenseId(licenseId)
@@ -50,7 +64,7 @@ public class PaymentService {
         return convertToDto(savedPayment);
     }
 
-    // Получить все платежи пользователя
+    @Override
     public List<PaymentDto> getPaymentsByUser(User user) {
         List<Payment> payments = paymentRepository.findByUser(user);
         return payments.stream()
@@ -58,7 +72,14 @@ public class PaymentService {
                 .collect(Collectors.toList());
     }
 
-    // Получить все платежи (только для админов)
+    @Override
+    public List<PaymentDto> getPaymentsByUsername(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        return getPaymentsByUser(user);
+    }
+
+    @Override
     public List<PaymentDto> getAllPayments() {
         List<Payment> payments = paymentRepository.findAll();
         return payments.stream()
@@ -66,6 +87,7 @@ public class PaymentService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public PaymentDto convertToDto(Payment payment) {
         PaymentDto dto = new PaymentDto();
         dto.setPaymentId(payment.getPaymentId());

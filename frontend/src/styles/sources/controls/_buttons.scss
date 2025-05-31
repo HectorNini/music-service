@@ -1,0 +1,24 @@
+@import '../_variables.scss';
+
+button {
+  padding: 0.6rem 1rem; // Базовый padding
+  border-radius: 5px; // Базовый border-radius
+  border: none; // Убираем стандартную рамку
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out, opacity 0.2s ease-in-out; // Плавные переходы
+  font-size: 1rem;
+  font-weight: 600; // Базовый жирный шрифт
+  text-align: center;
+  text-decoration: none; // Для кнопок-ссылок
+  display: inline-block; // Для кнопок-ссылок
+}
+
+/* Примеры модификаторов или состояний */
+button:hover {
+  opacity: 0.9; // Прозрачность при наведении
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+} 

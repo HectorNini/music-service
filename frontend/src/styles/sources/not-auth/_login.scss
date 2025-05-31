@@ -1,0 +1,48 @@
+@import '../_variables.scss';
+@import '../controls/_forms.scss';
+@import '../controls/_buttons.scss';
+@import '../common/_utilities.scss';
+
+/* Стили для форм авторизации и регистрации */
+.auth-container {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 2rem 2rem;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+
+  h2 {
+    text-align: center;
+    color: $color-dark-blue;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+  }
+
+  .error {
+    @extend .error-message;
+    margin-bottom: 1.5rem;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .form-group {
+    // Контейнер для каждого поля ввода
+    // Если нужно добавить специфичные стили для группы, то здесь
+  }
+
+  input[type="text"],
+  input[type="password"] {
+    @extend input;
+    width: 100%;
+  }
+
+  button[type="submit"] {
+    @extend .action-button;
+    width: 100%;
+  }
+} 
