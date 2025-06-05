@@ -32,7 +32,6 @@ public class LicenseController {
             @AuthenticationPrincipal UserDetails userDetails) {
         User user = userService.findByUsername(userDetails.getUsername());
         LicenseDto license = licenseService.buyLicense(priceId, months, user);
-        PaymentDto payment = paymentService.createPayment(license.getLicenseId());
         return ResponseEntity.ok(license);
     }
 

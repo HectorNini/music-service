@@ -1,3 +1,5 @@
+@import '../_variables.scss';
+
 /* Общие миксины */
 
 @mixin page-container {
@@ -17,5 +19,134 @@
 
   @media (max-width: $breakpoint) {
     flex-direction: column;
+  }
+}
+
+// Flexbox mixins
+@mixin flex($direction: row, $justify: flex-start, $align: stretch, $wrap: nowrap) {
+  display: flex;
+  flex-direction: $direction;
+  justify-content: $justify;
+  align-items: $align;
+  flex-wrap: $wrap;
+}
+
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+// Grid mixins
+@mixin grid($columns: 1, $gap: $spacing-md) {
+  display: grid;
+  grid-template-columns: repeat($columns, 1fr);
+  gap: $gap;
+}
+
+// Typography mixins
+@mixin text-style($size: $font-size-base, $weight: $font-weight-normal, $line-height: $line-height-base) {
+  font-size: $size;
+  font-weight: $weight;
+  line-height: $line-height;
+}
+
+// Responsive mixins
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == sm {
+    @media (min-width: $breakpoint-sm) { @content; }
+  }
+  @else if $breakpoint == md {
+    @media (min-width: $breakpoint-md) { @content; }
+  }
+  @else if $breakpoint == lg {
+    @media (min-width: $breakpoint-lg) { @content; }
+  }
+  @else if $breakpoint == xl {
+    @media (min-width: $breakpoint-xl) { @content; }
+  }
+}
+
+// Card mixin
+@mixin card($padding: $spacing-md) {
+  background: white;
+  border-radius: $border-radius-md;
+  box-shadow: $shadow-sm;
+  padding: $padding;
+  transition: $transition-base;
+
+  &:hover {
+    box-shadow: $shadow-md;
+  }
+}
+
+// Button mixin
+@mixin button($bg-color: $color-dark-blue, $text-color: white) {
+  background-color: $bg-color;
+  color: $text-color;
+  border: none;
+  border-radius: $border-radius-sm;
+  padding: $spacing-xs $spacing-sm;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  transition: $transition-base;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// Input mixin
+@mixin input {
+  width: 100%;
+  padding: $spacing-xs;
+  border: $border-width solid $border-color;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-base;
+  transition: $transition-base;
+
+  &:focus {
+    outline: none;
+    border-color: $color-dark-blue;
+    box-shadow: 0 0 0 2px rgba($color-dark-blue, 0.1);
+  }
+}
+
+// Container mixin
+@mixin container {
+  width: 100%;
+  max-width: $container-max-width;
+  margin: 0 auto;
+  padding: 0 $container-padding;
+}
+
+// Truncate text
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Aspect ratio
+@mixin aspect-ratio($width, $height) {
+  position: relative;
+  
+  &::before {
+    content: "";
+    display: block;
+    padding-top: ($height / $width) * 100%;
+  }
+
+  > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
   }
 } 

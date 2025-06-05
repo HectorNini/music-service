@@ -1,5 +1,4 @@
 import React from 'react';
-import './Profile.css';
 
 const LicenseDurationModal = ({ onClose, onSelect, basePrice }) => {
   // Расчет цен для разных периодов с учетом скидок

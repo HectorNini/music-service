@@ -190,29 +190,137 @@
   text-align: right;
 }
 
-.payment-item,
-.license-item {
-  padding: 15px 0;
-  border-bottom: 1px solid #eee;
-
-
-  // Визуальный эффект при наведении на кликабельные элементы лицензий
-  &.license-item:hover {
-    background-color: #f8f9fa; // Светло-серый фон при наведении
-    cursor: pointer; // Курсор-указатель
-  }
-
-  p {
-    margin: 5px 0;
-
-    strong {
-      display: inline-block;
-      min-width: 100px;
-    }
-  }
-}
-
+/* Контейнеры и панели */
 .user-panels-container {
   @include adaptive-flex-columns($gap: 20px, $breakpoint: $breakpoint-md);
   margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  margin-top: 30px;
+
+  > div {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+  }
+}
+
+.info-sections-container {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Лицензии и платежи */
+.licenses, .payments {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .section-heading {
+    margin-bottom: 0;
+    align-self: flex-start;
+    padding-left: 25px;
+  }
+
+  .items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 10px;
+    padding-bottom: 30px;
+  }
+}
+
+.license-item, .payment-item {
+  cursor: default;
+  transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  padding: 15px;
+  padding-left: 25px !important;
+  border-radius: 4px;
+  margin-bottom: 0;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  p {
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+.license-item {
+  cursor: pointer;
+
+  &:hover {
+    background-color: #e0f0ff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border-color: #007bff;
+  }
+}
+
+/* Опции длительности лицензии */
+.license-duration-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  padding: 20px;
+}
+
+.duration-option {
+  background: #f5f5f5;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+
+  &:hover {
+    border-color: #007bff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.duration-label {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.duration-price {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  .price {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #007bff;
+  }
+
+  .monthly-price {
+    font-size: 0.9em;
+    color: #666;
+  }
+}
+
+.discount-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #28a745;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8em;
+  font-weight: bold;
 } 
