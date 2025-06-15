@@ -11,7 +11,7 @@ public class PaymentDto {
     private Integer paymentId; // Идентификатор платежа
     private BigDecimal amount; // Сумма платежа
     private LocalDateTime paymentDate; // Дата платежа
-    private String productDescription; // Новое поле
+    private String productDescription; 
     private String status;
     private String paymentMethod;
 }
