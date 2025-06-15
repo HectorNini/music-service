@@ -10,10 +10,10 @@ import java.util.List;
 @Getter
 @Setter
 public class PlaylistDto {
-    private Integer playlistId; // Идентификатор плейлиста
-    private String name;        // Название плейлиста
-    private String description; // Описание плейлиста
-    private List<TrackDto> tracks; // Добавлено поле для треков
+    private Integer playlistId; 
+    private String name;       
+    private String description;
+    private List<TrackDto> tracks; 
     private Integer priceId; 
     private BigDecimal price; 
 }

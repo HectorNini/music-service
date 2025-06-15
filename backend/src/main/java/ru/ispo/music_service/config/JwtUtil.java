@@ -12,8 +12,8 @@ import java.util.Date;
 @Component
 public class JwtUtil {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtil.class);
-    private final String SECRET_KEY = "aX6+qZ7mRlWI5qk0G8ZJ3NxYRfYw1bT2zKjLpSvHtD0="; // Замените на реальный ключ
-    private final long EXPIRATION_TIME = 864_000_000; // 10 дней
+    private final String SECRET_KEY = "aX6+qZ7mRlWI5qk0G8ZJ3NxYRfYw1bT2zKjLpSvHtD0="; 
+    private final long EXPIRATION_TIME = 864_000_000; 
 
     public String generateToken(UserDetails userDetails) {
         logger.info("Generating token for user: {}", userDetails.getUsername());

@@ -3,12 +3,12 @@ import React from 'react';
 const Register = ({ formData, error, onSubmit, onInputChange }) => {
   return (
     <div className="auth-container">
-      <h2>Register</h2>
+      <h2>Регистрация</h2>
       {error && <div className="error">{error}</div>}
       <form onSubmit={onSubmit}>
         <input
           type="text"
-          placeholder="Username"
+          placeholder="Имя пользователя"
           name="username"
           value={formData.username}
           onChange={(e) => onInputChange(e.target.name, e.target.value)}
@@ -16,7 +16,7 @@ const Register = ({ formData, error, onSubmit, onInputChange }) => {
         />
         <input
           type="password"
-          placeholder="Password"
+          placeholder="Пароль"
           name="password"
           value={formData.password}
           onChange={(e) => onInputChange(e.target.name, e.target.value)}
@@ -32,13 +32,13 @@ const Register = ({ formData, error, onSubmit, onInputChange }) => {
         />
         <input
           type="text"
-          placeholder="Full Name"
+          placeholder="Полное имя"
           name="fullName"
           value={formData.fullName}
           onChange={(e) => onInputChange(e.target.name, e.target.value)}
           required
         />
-        <button type="submit">Register</button>
+        <button type="submit">Зарегистрироваться</button>
       </form>
     </div>
   );

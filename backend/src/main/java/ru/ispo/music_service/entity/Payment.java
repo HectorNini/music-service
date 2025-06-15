@@ -22,10 +22,6 @@ public class Payment {
     private Integer paymentId;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-    @ManyToOne
     @JoinColumn(name = "license_id", nullable = false)
     private License license;
 

@@ -14,12 +14,10 @@ public class ModelMapperConfig {
     public ModelMapper modelMapper() {
         ModelMapper mapper = new ModelMapper();
         
-        // Общие настройки
         mapper.getConfiguration()
             .setSkipNullEnabled(true)
             .setAmbiguityIgnored(true);
         
-        // Конфигурация маппингов
         configureUserMapping(mapper);
         configureTrackMapping(mapper);
         configurePlaylistMapping(mapper);
@@ -30,10 +28,8 @@ public class ModelMapperConfig {
     }
 
     private void configureUserMapping(ModelMapper mapper) {
-        // Явно создаем пустой TypeMap перед настройкой
         TypeMap<User, UserDto> typeMap = mapper.createTypeMap(User.class, UserDto.class);
 
-        // Настраиваем маппинг вручную
         typeMap.addMappings(m -> {
             m.map(User::getUsername, UserDto::setUsername);
             m.map(User::getEmail, UserDto::setEmail);

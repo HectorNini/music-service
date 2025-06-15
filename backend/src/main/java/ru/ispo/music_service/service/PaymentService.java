@@ -19,7 +19,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public interface PaymentService {
-    PaymentDto createPayment(Integer licenseId);
+    PaymentDto createPayment(Integer licenseId, BigDecimal amount);
     List<PaymentDto> getPaymentsByUser(User user);
     List<PaymentDto> getPaymentsByUsername(String username);
     List<PaymentDto> getAllPayments();
@@ -45,16 +45,15 @@ class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
-    public PaymentDto createPayment(Integer licenseId) {
+    public PaymentDto createPayment(Integer licenseId, BigDecimal amount) {
         License license = licenseRepository.findByLicenseId(licenseId)
                 .orElseThrow(() -> new EntityNotFoundException("License not found"));
 
         BigDecimal price = license.getPricing().getPrice(); // Берем цену из Pricing
 
         Payment payment = new Payment();
-        payment.setLicense(license);
-        payment.setUser(license.getUser()); // Устанавливаем пользователя из лицензии
-        payment.setAmount(price);
+        payment.setLicense(license);// Устанавливаем пользователя из лицензии
+        payment.setAmount(amount); // Используем переданную сумму
         payment.setStatus("COMPLETED");
         payment.setPaymentMethod("Credit Card");
         payment.setPaymentDate(LocalDateTime.now());
@@ -66,7 +65,7 @@ class PaymentServiceImpl implements PaymentService {
 
     @Override
     public List<PaymentDto> getPaymentsByUser(User user) {
-        List<Payment> payments = paymentRepository.findByUser(user);
+        List<Payment> payments = paymentRepository.findByLicense_User(user);
         return payments.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());

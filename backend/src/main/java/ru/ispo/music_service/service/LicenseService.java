@@ -35,16 +35,19 @@ class LicenseServiceImpl implements LicenseService {
     private final PlaylistTrackRepository playlistTrackRepository;
     private final PricingRepository pricingRepository;
     private final ModelMapper modelMapper;
+    private final PaymentService paymentService;
 
     public LicenseServiceImpl(LicenseRepository licenseRepository,
                           PlaylistTrackRepository playlistTrackRepository,
                           PricingRepository pricingRepository,
                           ModelMapper modelMapper,
-                          UserRepository userRepository) {
+                          UserRepository userRepository,
+                          PaymentService paymentService) {
         this.licenseRepository = licenseRepository;
         this.playlistTrackRepository = playlistTrackRepository;
         this.pricingRepository = pricingRepository;
         this.modelMapper = modelMapper;
+        this.paymentService = paymentService;
     }
 
     @Override
@@ -68,21 +71,21 @@ class LicenseServiceImpl implements LicenseService {
 
         // Рассчитываем скидку в зависимости от срока
         BigDecimal discountRate = calculateDiscountRate(months);
-        BigDecimal finalPrice = pricing.getPrice()
+        BigDecimal totalAmountPaid = pricing.getPrice() // Используем базовую цену из Pricing
                 .multiply(BigDecimal.valueOf(months))
                 .multiply(discountRate);
 
-        // Обновляем цену в Pricing
-        pricing.setPrice(finalPrice);
-        pricingRepository.save(pricing);
-
         License license = new License();
         license.setUser(user);
-        license.setPricing(pricing);
+        license.setPricing(pricing); // Связываем с оригинальной записью Pricing
         license.setStartDate(LocalDate.now());
         license.setEndDate(LocalDate.now().plusMonths(months));
 
         License savedLicense = licenseRepository.save(license);
+
+        // Создаем платеж с рассчитанной полной суммой
+        paymentService.createPayment(savedLicense.getLicenseId(), totalAmountPaid);
+
         return convertToDto(savedLicense);
     }
 

@@ -14,8 +14,8 @@ import './styles/main.scss';
 
 const App = () => {
   return (
-    <Router> {/* Сначала Router */}
-      <AuthProvider> {/* Потом AuthProvider */}
+    <Router> 
+      <AuthProvider> 
         <div className="app-container">
           <Navigation />
           <Routes>

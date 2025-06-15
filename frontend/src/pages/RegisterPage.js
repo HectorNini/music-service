@@ -19,7 +19,7 @@ const RegisterPage = () => {
       await api.post('/auth/register', formData);
       navigate('/login');
     } catch (err) {
-      setError(err.response?.data || 'Registration failed');
+      setError(err.response?.data || 'Ошибка при регистрации');
     }
   };
 
